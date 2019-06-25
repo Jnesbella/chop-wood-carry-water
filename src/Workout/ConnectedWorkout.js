@@ -1,23 +1,22 @@
 import { connect } from "react-redux";
-import fp from "lodash/fp";
 
 import Workout from "./Workout";
 
-import { createWorkoutFromStructure } from "../DataModels/data-models";
+import { addExercises } from "../Redux/Workout/workout.actions";
 
 function mapStateToProps(state) {
-  const { exercises } = state.data;
-  // const workout = createWorkoutFromStructure(
-  //   fp.get(state, ["app", "workouts", 0]) || {}
-  // );
+  const { name, description, exercises } = state.workout;
+
   return {
-    name: "Chest & Arms",
-    description: "Pump up your bis and tris and burn those abs.",
+    name,
+    description,
     exercises
   };
 }
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  onAddExercises: addExercises
+};
 
 export default connect(
   mapStateToProps,

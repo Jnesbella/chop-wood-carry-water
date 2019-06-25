@@ -27,8 +27,8 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1)
   },
   withSpace: {
-    padding: theme.spacing(0, 1),
-    margin: theme.spacing(0, 1)
+    padding: theme.spacing(0, 1, 1, 1),
+    margin: theme.spacing(0, 1, 1, 1)
   },
   addButton: {
     whiteSpace: "nowrap"
@@ -66,7 +66,7 @@ function filterByMuscleGroup(filters) {
 const FILTERS = [filterByName, filterByMuscleGroup];
 
 function AddExerciseModal(props) {
-  const { exercises, ...theRest } = props;
+  const { exercises, onAddExercises, ...theRest } = props;
   const classes = useStyles();
   const [filters, setFilters] = React.useState({
     [NAME_FILTER]: "",
@@ -93,7 +93,7 @@ function AddExerciseModal(props) {
   }
 
   function handleAddExercises() {
-    props.onAddExercises(selectedExercises);
+    // onAddExercises(selectedExercises);
   }
 
   function renderHeader() {
@@ -120,13 +120,39 @@ function AddExerciseModal(props) {
     );
   }
 
+  function getFilterMessage() {
+    const selectedExercisesCount = selectedExercises.length;
+    const selectedExercisesIncludedInFilterCount = filteredExercises.filter(e =>
+      selectedExercises.includes(e.id)
+    ).length;
+    const selectedExercisesHiddenByFilterCount =
+      selectedExercisesCount - selectedExercisesIncludedInFilterCount;
+
+    if (selectedExercisesHiddenByFilterCount === 0) return null;
+
+    return (
+      <Typography
+        className={classes.filterResults}
+        variant="body2"
+        color="textSecondary"
+      >
+        {selectedExercisesHiddenByFilterCount} of {selectedExercisesCount}{" "}
+        selected exercises are hidden by your search.
+      </Typography>
+    );
+  }
+
   function renderExercises() {
     const queries = filters[NAME_FILTER].length
       ? getQueriesForSearch(filters)
       : [];
 
+    const filterMessage = getFilterMessage();
+
     return (
       <List>
+        {filterMessage && <ListItem>{filterMessage}</ListItem>}
+
         {filteredExercises.map(exercise => {
           const { name } = exercise;
 
@@ -186,12 +212,6 @@ function AddExerciseModal(props) {
   }
 
   function renderFilters() {
-    const selectedExercisesCount = selectedExercises.length;
-    const selectedExercisesIncludedInFilterCount = filteredExercises.filter(e =>
-      selectedExercises.includes(e.id)
-    ).length;
-    const hiddenSelectedExercisesCount =
-      selectedExercisesCount - selectedExercisesIncludedInFilterCount;
     return (
       <div className={classes.withSpace}>
         <TextField
@@ -202,18 +222,6 @@ function AddExerciseModal(props) {
           fullWidth
           label="Search exercises..."
         />
-
-        <Typography
-          className={classes.filterResults}
-          variant="body2"
-          color="textSecondary"
-          style={{
-            visibility: hiddenSelectedExercisesCount > 0 ? "initial" : "hidden"
-          }}
-        >
-          {hiddenSelectedExercisesCount} of {selectedExercisesCount} selected
-          exercises are hidden by your search.
-        </Typography>
       </div>
     );
   }
@@ -223,6 +231,7 @@ function AddExerciseModal(props) {
       <Paper className={classes.modalContent}>
         {renderHeader()}
         {renderFilters()}
+        <Divider />
         {renderExercises()}
       </Paper>
     </Modal>
@@ -247,9 +256,4 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = {};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AddExerciseModal);
+export default connect(mapStateToProps)(AddExerciseModal);

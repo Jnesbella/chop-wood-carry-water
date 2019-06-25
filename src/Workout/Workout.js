@@ -136,7 +136,13 @@ function Workout(props) {
           </Button>
         )}
 
-        <List dense>{exercises.map(renderExercise)}</List>
+        <List dense>
+          {exercises.length ? (
+            exercises.map(renderExercise)
+          ) : (
+            <ListItem>No Exercises</ListItem>
+          )}
+        </List>
       </div>
     );
   }
@@ -147,6 +153,10 @@ function Workout(props) {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         container={() => workoutContainerRef.current}
+        onAddExercises={exercises => {
+          props.onAddExercises(exercises);
+          setModalOpen(false);
+        }}
       />
     );
   }
@@ -173,12 +183,14 @@ function Workout(props) {
 Workout.propTypes = {
   name: PropTypes.string.isRequired,
   description: PropTypes.string,
-  exercises: PropTypes.array
+  exercises: PropTypes.array,
+  onAddExercises: PropTypes.func
 };
 
 Workout.defaultProps = {
   description: null,
-  exercises: []
+  exercises: [],
+  onAddExercises: fp.noop
 };
 
 export default Workout;

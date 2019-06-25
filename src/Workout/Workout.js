@@ -12,7 +12,7 @@ import {
   Button
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AddExerciseModal from "./AddExerciseModal";
+import AddExerciseModal from "../AddExercise/AddExerciseModal";
 
 const useStyles = makeStyles(theme => ({
   workoutContainer: {
@@ -57,6 +57,7 @@ const renderSubtitle = (text, other) => {
 };
 
 function Workout(props) {
+  const { exercises } = props;
   const classes = useStyles();
   const [muscleGroups, setMuscleGroups] = React.useState([]);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -70,7 +71,7 @@ function Workout(props) {
         fp.flatten(props.exercises.map(exercise => exercise.muscleGroups))
       )
     );
-  });
+  }, [exercises]);
 
   function renderWorkoutName() {
     return (
@@ -122,7 +123,6 @@ function Workout(props) {
   }
 
   function renderExercises() {
-    const { exercises } = props;
     return (
       <div className={classes.section}>
         {renderSubtitle(

@@ -103,8 +103,6 @@ function AddExerciseModal(props) {
           Cancel
         </Button>
 
-        <span style={{ display: "inline-block", width: "100%" }} />
-
         <Button
           variant="contained"
           color="primary"

@@ -20,15 +20,7 @@ const useStyles = makeStyles(theme => ({
 function AddExerciseModal(props) {
   const { onAddExercises, onClose, ...theRest } = props;
   const classes = useStyles();
-  const containerRef = React.useRef(null);
-
-  React.useEffect(() => {
-    console.log("containerRef -- ", containerRef);
-    if (!containerRef.current) return;
-    containerRef.current.addEventListener("scroll", evt =>
-      console.log("banana")
-    );
-  });
+  const [scrolled, setScrolled] = React.useState(false);
 
   return (
     <Modal
@@ -37,8 +29,18 @@ function AddExerciseModal(props) {
       style={{ position: "absolute" }}
       className={classes.root}
     >
-      <Paper className={classes.modalContent} ref={containerRef}>
-        <AddExercise onAddExercises={onAddExercises} onCancel={onClose} />
+      <Paper
+        className={classes.modalContent}
+        onScroll={evt => {
+          const { scrollTop } = evt.target;
+          setScrolled(scrollTop !== 0);
+        }}
+      >
+        <AddExercise
+          onAddExercises={onAddExercises}
+          onCancel={onClose}
+          scrolled={scrolled}
+        />
       </Paper>
     </Modal>
   );

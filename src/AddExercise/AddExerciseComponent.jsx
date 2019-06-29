@@ -16,8 +16,15 @@ import {
 } from "@material-ui/core";
 import fp from "lodash/fp";
 import { makeStyles } from "@material-ui/core/styles";
+import uuidv4 from "uuid/v4";
 
-import { FILTERS, NAME_FILTER, MUSCLE_GROUP_FILTER } from "./AddExercise-utils";
+import {
+  FILTERS,
+  NAME_FILTER,
+  MUSCLE_GROUP_FILTER,
+  getHighlightsForString,
+  getQueriesForSearch
+} from "./AddExercise-utils";
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -29,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function AddExercise(props) {
-  const { exercises, onAddExercises, onCancel } = props;
+  const { exercises, onAddExercises, onCancel, scrolled } = props;
   const classes = useStyles();
 
   // state
@@ -121,13 +128,14 @@ function AddExercise(props) {
 
   const renderHeader = () => {
     return (
-      <Paper className={classes.header} square elevation={1}>
+      <Paper className={classes.header} square elevation={scrolled ? 1 : 0}>
         <Toolbar>
           <Box py={2} width="100%">
             <Box
               className="AddExercise_actions"
               display="flex"
               justifyContent="space-between"
+              pb={1}
             >
               {renderCancelButton()}
               {renderAddButton()}
@@ -139,9 +147,10 @@ function AddExercise(props) {
     );
   };
 
-  const renderExercise = exercise => {
+  const renderExercise = (exercise, queries) => {
     const { name } = exercise;
     const selected = isExerciseSelected(exercise);
+    const highlights = getHighlightsForString(name, queries);
 
     return (
       <ListItem
@@ -160,7 +169,22 @@ function AddExercise(props) {
         </ListItemIcon>
         <ListItemText>
           <Typography display="inline" variant="body1" color="textPrimary">
-            {name}
+            {highlights.length > 0 &&
+              highlights.map(part => (
+                <Typography
+                  key={uuidv4()}
+                  display="inline"
+                  variant="body1"
+                  color={part.highlight ? "textPrimary" : "textSecondary"}
+                >
+                  {part.text}
+                </Typography>
+              ))}
+            {highlights.length === 0 && (
+              <Typography display="inline" variant="body1" color="textPrimary">
+                {name}
+              </Typography>
+            )}
           </Typography>
         </ListItemText>
       </ListItem>
@@ -168,10 +192,13 @@ function AddExercise(props) {
   };
 
   const renderExercises = () => {
+    const search = filterParams[NAME_FILTER];
+    const queries = search.length ? getQueriesForSearch(search) : [];
+
     return (
       <List>
         {filteredExercises.length ? (
-          filteredExercises.map(renderExercise)
+          filteredExercises.map(exercise => renderExercise(exercise, queries))
         ) : (
           <ListItem>
             <ListItemText
@@ -191,7 +218,7 @@ function AddExercise(props) {
   };
 
   return (
-    <div className="AddExercise" onScroll={evt => console.log("apple")}>
+    <div className="AddExercise">
       {renderHeader()}
       {renderExercises()}
     </div>
@@ -200,6 +227,7 @@ function AddExercise(props) {
 
 AddExercise.propTypes = {
   exercises: PropTypes.array,
+  scrolled: PropTypes.bool,
 
   onAddExercises: PropTypes.func,
   onCancel: PropTypes.func
@@ -207,6 +235,7 @@ AddExercise.propTypes = {
 
 AddExercise.defaultProps = {
   exercises: [],
+  scrolled: false,
 
   onAddExercises: fp.noop,
   onCancel: fp.noop

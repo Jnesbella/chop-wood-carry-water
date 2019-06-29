@@ -16,7 +16,8 @@ import AddExerciseModal from "../AddExercise/AddExerciseModal";
 
 const useStyles = makeStyles(theme => ({
   workoutContainer: {
-    position: "relative"
+    position: "relative",
+    height: "100vh"
   },
   section: {
     margin: theme.spacing(1)
@@ -136,7 +137,7 @@ function Workout(props) {
           </Button>
         )}
 
-        <List dense>
+        <List>
           {exercises.length ? (
             exercises.map(renderExercise)
           ) : (

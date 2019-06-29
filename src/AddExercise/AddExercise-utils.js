@@ -1,7 +1,7 @@
 import fp from "lodash/fp";
 import parse from "autosuggest-highlight/parse";
 
-function getQueriesForSearch(search) {
+export function getQueriesForSearch(search) {
   return fp
     .uniq(search.trim().split(/\s+/gim))
     .map(source => ({ regExp: new RegExp(source, "gim"), source }));
@@ -30,3 +30,16 @@ function filterByMuscleGroup(filters) {
 }
 
 export const FILTERS = [filterByName];
+
+export function getHighlightsForString(str, queries) {
+  let ranges = [];
+  queries.forEach(query => {
+    str.replace(query.regExp, (match, offset) => {
+      ranges.push([offset, offset + query.source.length]);
+    });
+  }) || [];
+
+  return ranges.length > 0
+    ? parse(str, fp.sortBy(range => range[0])(ranges))
+    : [];
+}

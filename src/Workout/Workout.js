@@ -10,10 +10,18 @@ import {
   Chip,
   Divider,
   Button,
-  Box
+  Box,
+  Table,
+  TableHead,
+  TableCell,
+  TableBody,
+  TableRow,
+  TextField
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddExerciseModal from "../AddExercise/AddExerciseModal";
+
+import SetInput from "./SetInput";
 
 const useStyles = makeStyles(theme => ({
   workoutContainer: {
@@ -31,6 +39,9 @@ const useStyles = makeStyles(theme => ({
   },
   modal: {
     position: "absolute"
+  },
+  setInput: {
+    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -119,12 +130,23 @@ function Workout(props) {
   };
 
   const renderSets = sets => {
+    if (!sets.length > 0) return null;
+
+    return sets.map((set, index) => (
+      <SetInput className={classes.setInput} label={`Set ${index + 1}`} />
+    ));
+  };
+
+  const renderAddExerciseButton = (options = {}) => {
     return (
-      <Box>
-        {sets.map((set, index) => (
-          <div>{`Set ${index + 1}`}</div>
-        ))}
-      </Box>
+      <Button
+        className={classes.addExerciseButton}
+        onClick={handleAddExercise}
+        color="primary"
+        {...options}
+      >
+        Add exercises
+      </Button>
     );
   };
 
@@ -139,7 +161,6 @@ function Workout(props) {
           <Button
             variant="outlined"
             fullWidth
-            size="small"
             onClick={() => onAddSet(exercise.id)}
           >
             Add Set
@@ -154,13 +175,7 @@ function Workout(props) {
       <div className={classes.section}>
         {renderSubtitle(
           "Exercises",
-          <Button
-            className={classes.addExerciseButton}
-            color="primary"
-            onClick={handleAddExercise}
-          >
-            Add exercises
-          </Button>
+          exercises.length ? renderAddExerciseButton() : null
         )}
 
         <List>
@@ -168,16 +183,10 @@ function Workout(props) {
             exercises.map(renderExercise)
           ) : (
             <ListItem>
-              <ListItemText
-                primaryTypographyProps={{
-                  variant: "body2",
-                  color: "textSecondary",
-                  align: "center",
-                  display: "block"
-                }}
-              >
-                No Exercises. Click "Add Exercises" to get started.
-              </ListItemText>
+              {renderAddExerciseButton({
+                fullWidth: true,
+                variant: "contained"
+              })}
             </ListItem>
           )}
         </List>
@@ -210,8 +219,8 @@ function Workout(props) {
       <Divider />
       {renderProgramInfo()}
       <Divider />
-      {renderMuscleGroups()}
-      <Divider />
+      {muscleGroups.length > 0 && renderMuscleGroups()}
+      {muscleGroups.length > 0 && <Divider />}
       {renderExercises()}
       {renderModal()}
     </div>

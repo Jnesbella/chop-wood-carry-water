@@ -9,7 +9,8 @@ import {
   ListItemText,
   Chip,
   Divider,
-  Button
+  Button,
+  Box
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddExerciseModal from "../AddExercise/AddExerciseModal";
@@ -17,7 +18,7 @@ import AddExerciseModal from "../AddExercise/AddExerciseModal";
 const useStyles = makeStyles(theme => ({
   workoutContainer: {
     position: "relative",
-    height: "100vh"
+    minHeight: "100vh"
   },
   section: {
     margin: theme.spacing(1)
@@ -32,14 +33,6 @@ const useStyles = makeStyles(theme => ({
     position: "absolute"
   }
 }));
-
-const renderExercise = exercise => {
-  return (
-    <ListItem key={exercise.id}>
-      <ListItemText primary={exercise.name} />
-    </ListItem>
-  );
-};
 
 const renderSubtitle = (text, other) => {
   return (
@@ -58,15 +51,13 @@ const renderSubtitle = (text, other) => {
 };
 
 function Workout(props) {
-  const { exercises } = props;
+  const { exercises, sets, onAddExercises, onAddSet } = props;
   const classes = useStyles();
   const [muscleGroups, setMuscleGroups] = React.useState([]);
   const [modalOpen, setModalOpen] = React.useState(false);
   const workoutContainerRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (muscleGroups.length) return;
-
     setMuscleGroups(
       fp.uniqBy(group => group.label)(
         fp.flatten(props.exercises.map(exercise => exercise.muscleGroups))
@@ -123,6 +114,41 @@ function Workout(props) {
     setModalOpen(true);
   }
 
+  const getSetsForExercise = exercise => {
+    return sets.filter(set => set.parentId === exercise.id);
+  };
+
+  const renderSets = sets => {
+    return (
+      <Box>
+        {sets.map((set, index) => (
+          <div>{`Set ${index + 1}`}</div>
+        ))}
+      </Box>
+    );
+  };
+
+  const renderExercise = exercise => {
+    return (
+      <ListItem key={exercise.id}>
+        <Box flexGrow={1}>
+          <ListItemText
+            primary={exercise.name}
+            secondary={renderSets(getSetsForExercise(exercise))}
+          />
+          <Button
+            variant="outlined"
+            fullWidth
+            size="small"
+            onClick={() => onAddSet(exercise.id)}
+          >
+            Add Set
+          </Button>
+        </Box>
+      </ListItem>
+    );
+  };
+
   function renderExercises() {
     return (
       <div className={classes.section}>
@@ -141,7 +167,18 @@ function Workout(props) {
           {exercises.length ? (
             exercises.map(renderExercise)
           ) : (
-            <ListItem>No Exercises</ListItem>
+            <ListItem>
+              <ListItemText
+                primaryTypographyProps={{
+                  variant: "body2",
+                  color: "textSecondary",
+                  align: "center",
+                  display: "block"
+                }}
+              >
+                No Exercises. Click "Add Exercises" to get started.
+              </ListItemText>
+            </ListItem>
           )}
         </List>
       </div>
@@ -154,8 +191,8 @@ function Workout(props) {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         container={() => workoutContainerRef.current}
-        onAddExercises={exercises => {
-          props.onAddExercises(exercises);
+        onAddExercises={exercisesToAdd => {
+          onAddExercises(exercisesToAdd);
           setModalOpen(false);
         }}
       />
@@ -185,13 +222,17 @@ Workout.propTypes = {
   name: PropTypes.string.isRequired,
   description: PropTypes.string,
   exercises: PropTypes.array,
-  onAddExercises: PropTypes.func
+  sets: PropTypes.array,
+  onAddExercises: PropTypes.func,
+  onAddSet: PropTypes.func
 };
 
 Workout.defaultProps = {
   description: null,
   exercises: [],
-  onAddExercises: fp.noop
+  sets: [],
+  onAddExercises: fp.noop,
+  onAddSet: fp.noop
 };
 
 export default Workout;

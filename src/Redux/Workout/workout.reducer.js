@@ -1,8 +1,9 @@
-import { ADD_EXERCISES } from "./workout.actions";
+import { ADD_EXERCISES, ADD_SET } from "./workout.actions";
 
 export const initialState = {
-  name: "",
-  description: "",
+  name: "Chest & Arms",
+  programId: null,
+  description: "Get your chest and arms burning with this workout.",
   exercises: [],
   sets: []
 };
@@ -14,7 +15,13 @@ const ACTION_HANDLERS = {
   [ADD_EXERCISES]: (state, action) => {
     return {
       ...state,
-      exercises: action.payload
+      exercises: [...state.exercises, ...action.payload]
+    };
+  },
+  [ADD_SET]: (state, action) => {
+    return {
+      ...state,
+      sets: [...state.sets, action.payload]
     };
   }
 };

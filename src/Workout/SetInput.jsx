@@ -11,10 +11,15 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Chip
+  Chip,
+  Typography,
+  Divider
 } from "@material-ui/core";
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import * as yup from "yup";
+
+import RepsInput from "./VolumeInputReps";
 
 const useStyles = makeStyles(theme => ({
   chip: {
@@ -22,17 +27,48 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const RANGE_REGEX = /^\d+\s*-?\s*\d+$/gim;
+const VOLUME_SCHEMA_REPS = yup.string().matches(RANGE_REGEX);
+const INTENSITY_SCHEMA_WEIGHT = yup.number().positive();
+const VOLUME_SCHEMA_MIN = yup
+  .number()
+  .positive()
+  .integer();
+const VOLUME_SCHEMA_MAX = yup
+  .number()
+  .positive()
+  .integer();
+
+const INPUT_NAME_INTENSITY = "intensity";
+const INPUT_NAME_VOLUME = "volume";
+const INPUT_NAME_VOLUME_MIN = "volumeMin";
+const INPUT_NAME_VOLUME_MAX = "volumeMax";
+const INPUT_NAME_PERCENT_ONE_REP_MAX = "percentOneRepMax";
+
 function SetInput(props) {
   const { onChange, label, className } = props;
   const classes = useStyles();
 
   const [advanceOptionsOpen, setAdvanceOptionsOpen] = React.useState(false);
-  const [volume, setVolume] = React.useState("");
-  const [intensity, setIntensity] = React.useState("");
   const [isPercentOneRepMax, setIsPercentOneRepMax] = React.useState(false);
   const [isAsManyRepsAsPossible, setIsAsManyRepsAsPossible] = React.useState(
     false
   );
+  const [isRepRange, setIsRepRange] = React.useState(false);
+  const [validity, setValidity] = React.useState({
+    [INPUT_NAME_INTENSITY]: true,
+    [INPUT_NAME_VOLUME]: true,
+    [INPUT_NAME_PERCENT_ONE_REP_MAX]: true,
+    [INPUT_NAME_VOLUME_MIN]: true,
+    [INPUT_NAME_VOLUME_MAX]: true
+  });
+  const [values, setValues] = React.useState({
+    [INPUT_NAME_INTENSITY]: "",
+    [INPUT_NAME_VOLUME]: "",
+    [INPUT_NAME_PERCENT_ONE_REP_MAX]: "",
+    [INPUT_NAME_VOLUME_MIN]: "",
+    [INPUT_NAME_VOLUME_MAX]: ""
+  });
 
   const percentOneRepMaxRef = React.useRef(null);
   React.useEffect(() => {
@@ -40,23 +76,60 @@ function SetInput(props) {
 
     percentOneRepMaxRef.current.focus();
   }, [isPercentOneRepMax]);
+  const volumeMinRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!isRepRange) return;
+
+    volumeMinRef.current.focus();
+  }, [isRepRange]);
+  React.useEffect(() => {
+    if (!isRepRange) return;
+
+    setValues({
+      ...values,
+      [INPUT_NAME_VOLUME]: `${values[INPUT_NAME_VOLUME_MIN]} - ${
+        values[INPUT_NAME_VOLUME_MAX]
+      }`
+    });
+  }, [values[INPUT_NAME_VOLUME_MIN], values[INPUT_NAME_VOLUME_MAX]]);
+
+  const isValid = () => {
+    const { volume: volumeValue, intensity: intensityValue } = values;
+
+    return (
+      VOLUME_SCHEMA_REPS.isValid(volumeValue) &&
+      INTENSITY_SCHEMA_WEIGHT.isValid(intensityValue)
+    );
+  };
 
   const fireChange = () => {
+    if (!isValid()) {
+      return;
+    }
+
+    const { volume: volumeValue, intensity: intensityValue } = values;
+
     onChange({
       volume: {
-        value: 0,
+        value: volumeValue,
         type: "REPS",
-        repRange: false,
+        isRepRange: false,
         minReps: 0,
         maxReps: 0,
         amrap: false
       },
       intensity: {
-        value: 0,
+        value: intensityValue,
         type: "WEIGHT",
         percentOneRepMax: false
       }
     });
+  };
+
+  const handleInputChange = event => {
+    const { name, value } = event.target;
+
+    setValues({ ...values, [name]: value });
   };
 
   const renderTags = () => {
@@ -79,8 +152,8 @@ function SetInput(props) {
   const renderAdvanceOptions = () => {
     return (
       <Collapse in={advanceOptionsOpen} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding dense>
-          <ListItem>
+        <List dense>
+          <ListItem disableGutters>
             <ListItemIcon>
               <Switch
                 value={isAsManyRepsAsPossible}
@@ -95,7 +168,7 @@ function SetInput(props) {
             />
           </ListItem>
 
-          <ListItem>
+          <ListItem disableGutters>
             <ListItemIcon>
               <Switch
                 value={isPercentOneRepMax}
@@ -108,29 +181,65 @@ function SetInput(props) {
             />
             <Box flex={1}>
               <TextField
+                name={INPUT_NAME_PERCENT_ONE_REP_MAX}
                 variant="outlined"
                 margin="dense"
                 label="%"
                 disabled={!isPercentOneRepMax}
                 inputRef={percentOneRepMaxRef}
+                error={!validity[INPUT_NAME_PERCENT_ONE_REP_MAX]}
+                onChange={handleInputChange}
               />
             </Box>
           </ListItem>
 
-          {/* <ListItem>
-        <ListItemIcon>
-          <Switch />
-        </ListItemIcon>
-        <ListItemText
-          primary="Rep range"
-          primaryTypographyProps={{ noWrap: true }}
-        />
-        <Box flex={1}>
-          <TextField variant="" margin="dense" label="min" />
-          <Typography primary="to" component="span" />
-          <TextField variant="outlined" margin="dense" label="max" />
-        </Box>
-      </ListItem> */}
+          <ListItem disableGutters>
+            <ListItemIcon>
+              <Switch
+                value={isRepRange}
+                onChange={() => setIsRepRange(!isRepRange)}
+              />
+            </ListItemIcon>
+
+            <ListItemText
+              primary="Rep range"
+              primaryTypographyProps={{ noWrap: true }}
+            />
+
+            <Box
+              flex={5}
+              display="flex"
+              flexDirection="row"
+              alignItems="baseline"
+            >
+              <TextField
+                name={INPUT_NAME_VOLUME_MIN}
+                variant="outlined"
+                margin="dense"
+                label="min"
+                value={values[INPUT_NAME_VOLUME_MIN]}
+                disabled={!isRepRange}
+                inputRef={volumeMinRef}
+                error={!validity[INPUT_NAME_VOLUME_MIN]}
+                onChange={handleInputChange}
+              />
+
+              <Box mx={1}>
+                <Typography component="span">{"to"}</Typography>
+              </Box>
+
+              <TextField
+                name={INPUT_NAME_VOLUME_MAX}
+                variant="outlined"
+                margin="dense"
+                label="max"
+                value={values[INPUT_NAME_VOLUME_MAX]}
+                disabled={!isRepRange}
+                error={!validity[INPUT_NAME_VOLUME_MAX]}
+                onChange={handleInputChange}
+              />
+            </Box>
+          </ListItem>
         </List>
       </Collapse>
     );
@@ -138,24 +247,44 @@ function SetInput(props) {
 
   return (
     <Box
-      border={1}
+      borderBottom={1}
       borderColor="grey.500"
-      p={1}
+      py={1}
       borderRadius={4}
       className={className}
     >
       {renderTags()}
       <Box display="flex" flexWrap="nowrap" alignItems="center">
         <Box mr={1}>
-          <TextField variant="outlined" label="lbs" margin="dense" />
+          <TextField
+            name={INPUT_NAME_INTENSITY}
+            variant="outlined"
+            label="lbs"
+            value={values[INPUT_NAME_INTENSITY]}
+            margin="dense"
+            error={!validity[INPUT_NAME_INTENSITY]}
+            onChange={handleInputChange}
+            placeholder="e.g., 135, 85%"
+          />
         </Box>
 
         <Box mr={1}>
-          <TextField variant="outlined" label="reps" margin="dense" />
+          <RepsInput
+            name={INPUT_NAME_VOLUME}
+            variant="outlined"
+            value={values[INPUT_NAME_VOLUME]}
+            margin="dense"
+            error={!validity[INPUT_NAME_VOLUME]}
+            onChange={handleInputChange}
+            min={0}
+            max={10}
+            amrap
+          />
         </Box>
 
         <div>
           <IconButton
+            size="small"
             onClick={() => setAdvanceOptionsOpen(!advanceOptionsOpen)}
           >
             {advanceOptionsOpen ? <ExpandMore /> : <ExpandLess />}

@@ -6,20 +6,27 @@ import {
   Switch,
   IconButton,
   TextField,
-  Collapse,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Chip,
   Typography,
-  Divider
+  Divider,
+  Drawer,
+  Container
 } from "@material-ui/core";
-import { ExpandLess, ExpandMore } from "@material-ui/icons";
+import {
+  ExpandLess,
+  ExpandMore,
+  Delete as DeleteIcon,
+  MoreHoriz as MoreHorizIcon
+} from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import * as yup from "yup";
 
 import RepsInput from "./VolumeInputReps";
+import WeightInput from "./IntensityInputWeight";
 
 const useStyles = makeStyles(theme => ({
   chip: {
@@ -82,16 +89,6 @@ function SetInput(props) {
 
     volumeMinRef.current.focus();
   }, [isRepRange]);
-  React.useEffect(() => {
-    if (!isRepRange) return;
-
-    setValues({
-      ...values,
-      [INPUT_NAME_VOLUME]: `${values[INPUT_NAME_VOLUME_MIN]} - ${
-        values[INPUT_NAME_VOLUME_MAX]
-      }`
-    });
-  }, [values[INPUT_NAME_VOLUME_MIN], values[INPUT_NAME_VOLUME_MAX]]);
 
   const isValid = () => {
     const { volume: volumeValue, intensity: intensityValue } = values;
@@ -132,164 +129,168 @@ function SetInput(props) {
     setValues({ ...values, [name]: value });
   };
 
-  const renderTags = () => {
-    const chips = [
-      label.length > 0 && { color: "primary", label },
-      isAsManyRepsAsPossible && { variant: "outlined", label: "AMRAP" },
-      isPercentOneRepMax && { variant: "outlined", label: "%1RM" }
-    ];
-
-    return (
-      <Box>
-        {chips.map(
-          chip =>
-            chip && <Chip size="small" className={classes.chip} {...chip} />
-        )}
-      </Box>
-    );
-  };
-
   const renderAdvanceOptions = () => {
     return (
-      <Collapse in={advanceOptionsOpen} timeout="auto" unmountOnExit>
-        <List dense>
-          <ListItem disableGutters>
-            <ListItemIcon>
-              <Switch
-                value={isAsManyRepsAsPossible}
-                onChange={() =>
-                  setIsAsManyRepsAsPossible(!isAsManyRepsAsPossible)
-                }
+      <Drawer
+        anchor="bottom"
+        open={advanceOptionsOpen}
+        onClose={() => setAdvanceOptionsOpen(false)}
+      >
+        <Container maxWidth="xs">
+          <List dense>
+            <ListItem>
+              <ListItemIcon>
+                <Switch
+                  value={isAsManyRepsAsPossible}
+                  onChange={() =>
+                    setIsAsManyRepsAsPossible(!isAsManyRepsAsPossible)
+                  }
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="AMRAP"
+                primaryTypographyProps={{ noWrap: true }}
               />
-            </ListItemIcon>
-            <ListItemText
-              primary="AMRAP"
-              primaryTypographyProps={{ noWrap: true }}
-            />
-          </ListItem>
+            </ListItem>
 
-          <ListItem disableGutters>
-            <ListItemIcon>
-              <Switch
-                value={isPercentOneRepMax}
-                onChange={() => setIsPercentOneRepMax(!isPercentOneRepMax)}
+            <ListItem>
+              <ListItemIcon>
+                <Switch
+                  value={isPercentOneRepMax}
+                  onChange={() => setIsPercentOneRepMax(!isPercentOneRepMax)}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="%1RM"
+                primaryTypographyProps={{ noWrap: true }}
               />
-            </ListItemIcon>
-            <ListItemText
-              primary="%1RM"
-              primaryTypographyProps={{ noWrap: true }}
-            />
-            <Box flex={1}>
-              <TextField
-                name={INPUT_NAME_PERCENT_ONE_REP_MAX}
-                variant="outlined"
-                margin="dense"
-                label="%"
-                disabled={!isPercentOneRepMax}
-                inputRef={percentOneRepMaxRef}
-                error={!validity[INPUT_NAME_PERCENT_ONE_REP_MAX]}
-                onChange={handleInputChange}
-              />
-            </Box>
-          </ListItem>
-
-          <ListItem disableGutters>
-            <ListItemIcon>
-              <Switch
-                value={isRepRange}
-                onChange={() => setIsRepRange(!isRepRange)}
-              />
-            </ListItemIcon>
-
-            <ListItemText
-              primary="Rep range"
-              primaryTypographyProps={{ noWrap: true }}
-            />
-
-            <Box
-              flex={5}
-              display="flex"
-              flexDirection="row"
-              alignItems="baseline"
-            >
-              <TextField
-                name={INPUT_NAME_VOLUME_MIN}
-                variant="outlined"
-                margin="dense"
-                label="min"
-                value={values[INPUT_NAME_VOLUME_MIN]}
-                disabled={!isRepRange}
-                inputRef={volumeMinRef}
-                error={!validity[INPUT_NAME_VOLUME_MIN]}
-                onChange={handleInputChange}
-              />
-
-              <Box mx={1}>
-                <Typography component="span">{"to"}</Typography>
+              <Box flex={1} display="flex" justifyContent="flex-end">
+                <TextField
+                  name={INPUT_NAME_PERCENT_ONE_REP_MAX}
+                  variant="outlined"
+                  margin="dense"
+                  label="%"
+                  disabled={!isPercentOneRepMax}
+                  inputRef={percentOneRepMaxRef}
+                  error={!validity[INPUT_NAME_PERCENT_ONE_REP_MAX]}
+                  onChange={handleInputChange}
+                />
               </Box>
+            </ListItem>
 
-              <TextField
-                name={INPUT_NAME_VOLUME_MAX}
-                variant="outlined"
-                margin="dense"
-                label="max"
-                value={values[INPUT_NAME_VOLUME_MAX]}
-                disabled={!isRepRange}
-                error={!validity[INPUT_NAME_VOLUME_MAX]}
-                onChange={handleInputChange}
+            <ListItem>
+              <ListItemIcon>
+                <Switch
+                  value={isRepRange}
+                  onChange={() => setIsRepRange(!isRepRange)}
+                />
+              </ListItemIcon>
+
+              <ListItemText
+                primary="Rep range"
+                primaryTypographyProps={{ noWrap: true }}
               />
-            </Box>
-          </ListItem>
-        </List>
-      </Collapse>
+
+              <Box
+                flex={5}
+                display="flex"
+                flexDirection="row"
+                alignItems="baseline"
+              >
+                <TextField
+                  name={INPUT_NAME_VOLUME_MIN}
+                  variant="outlined"
+                  margin="dense"
+                  label="min"
+                  value={values[INPUT_NAME_VOLUME_MIN]}
+                  disabled={!isRepRange}
+                  inputRef={volumeMinRef}
+                  error={!validity[INPUT_NAME_VOLUME_MIN]}
+                  onChange={handleInputChange}
+                />
+
+                <Box mx={1}>
+                  <Typography component="span">{"to"}</Typography>
+                </Box>
+
+                <TextField
+                  name={INPUT_NAME_VOLUME_MAX}
+                  variant="outlined"
+                  margin="dense"
+                  label="max"
+                  value={values[INPUT_NAME_VOLUME_MAX]}
+                  disabled={!isRepRange}
+                  error={!validity[INPUT_NAME_VOLUME_MAX]}
+                  onChange={handleInputChange}
+                />
+              </Box>
+            </ListItem>
+          </List>
+        </Container>
+      </Drawer>
     );
   };
 
   return (
-    <Box
-      borderBottom={1}
-      borderColor="grey.500"
-      py={1}
-      borderRadius={4}
-      className={className}
-    >
-      {renderTags()}
+    <Box py={1} className={className}>
       <Box display="flex" flexWrap="nowrap" alignItems="center">
         <Box mr={1}>
           <TextField
+            name="label"
+            value=""
+            margin="dense"
+            placeholder={label}
+            label="Set"
+            InputLabelProps={{
+              shrink: true
+            }}
+          />
+        </Box>
+
+        <Box mr={1}>
+          <WeightInput
             name={INPUT_NAME_INTENSITY}
-            variant="outlined"
-            label="lbs"
             value={values[INPUT_NAME_INTENSITY]}
             margin="dense"
             error={!validity[INPUT_NAME_INTENSITY]}
             onChange={handleInputChange}
-            placeholder="e.g., 135, 85%"
+            percentOfOneRepMax={values[INPUT_NAME_PERCENT_ONE_REP_MAX]}
           />
         </Box>
 
         <Box mr={1}>
           <RepsInput
             name={INPUT_NAME_VOLUME}
-            variant="outlined"
             value={values[INPUT_NAME_VOLUME]}
             margin="dense"
             error={!validity[INPUT_NAME_VOLUME]}
             onChange={handleInputChange}
-            min={0}
-            max={10}
-            amrap
+            min={values[INPUT_NAME_VOLUME_MIN]}
+            max={values[INPUT_NAME_VOLUME_MAX]}
+            amrap={isAsManyRepsAsPossible}
           />
         </Box>
 
-        <div>
+        <Box mr={1}>
           <IconButton
-            size="small"
-            onClick={() => setAdvanceOptionsOpen(!advanceOptionsOpen)}
+            className={classes.button}
+            aria-label="Delete"
+            // size="small"
           >
-            {advanceOptionsOpen ? <ExpandMore /> : <ExpandLess />}
+            <DeleteIcon />
           </IconButton>
-        </div>
+        </Box>
+
+        <Box>
+          <IconButton
+            className={classes.button}
+            aria-label="More"
+            onClick={() => setAdvanceOptionsOpen(true)}
+            // size="small"
+          >
+            <MoreHorizIcon />
+          </IconButton>
+        </Box>
       </Box>
       {renderAdvanceOptions()}
     </Box>

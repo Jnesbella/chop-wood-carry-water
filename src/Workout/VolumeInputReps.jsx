@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import fp from "lodash/fp";
 
 const LABEL = "reps";
+const AMRAP = "AMRAP";
 // const PLACEHOLDER = "e.g., 10, 10+, 8 - 12, 8 - 12+";
 // const REP_REGEX = /^\s*(\d+)\s*$/im;
 // const REP_RANGE_REGEX = /^\s*(\d+)\s*-?\s*(\d+)\s*$/im;
@@ -11,12 +12,11 @@ const LABEL = "reps";
 function VolumeInputReps(props) {
   const { min, max, amrap, ...theRest } = props;
 
-  const [valid, setValid] = React.useState(true);
-
   const getPlaceholder = () => {
-    const hasMin = !fp.isNil(min);
-    const hasMax = !fp.isNil(max);
+    const hasMin = !(fp.isNil(min) || min.length === 0);
+    const hasMax = !(fp.isNil(max) || max.length === 0);
 
+    if (!hasMin && !hasMax && amrap) return AMRAP;
     if (!hasMin && !hasMax) return "";
 
     const beginning = hasMin ? min : "0";
@@ -26,11 +26,15 @@ function VolumeInputReps(props) {
     return `${beginning}${middle}${end}`;
   };
 
+  const placeholder = getPlaceholder();
+
   return (
     <TextField
-      placeholder={getPlaceholder()}
+      placeholder={placeholder}
       label={LABEL}
-      error={!valid}
+      InputLabelProps={{
+        shrink: true // placeholder.length > 0
+      }}
       {...theRest}
     />
   );

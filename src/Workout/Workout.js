@@ -133,7 +133,7 @@ function Workout(props) {
     if (!sets.length > 0) return null;
 
     return sets.map((set, index) => (
-      <SetInput className={classes.setInput} label={`Set ${index + 1}`} />
+      <SetInput className={classes.setInput} label={`${index + 1}`} />
     ));
   };
 

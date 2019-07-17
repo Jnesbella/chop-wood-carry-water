@@ -21,7 +21,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import AddExerciseModal from "../AddExercise/AddExerciseModal";
 
-import SetInput from "./SetInput";
+import ExerciseCard from "./ExerciseCard";
 
 const useStyles = makeStyles(theme => ({
   workoutContainer: {
@@ -71,7 +71,7 @@ function Workout(props) {
   React.useEffect(() => {
     setMuscleGroups(
       fp.uniqBy(group => group.label)(
-        fp.flatten(props.exercises.map(exercise => exercise.muscleGroups))
+        fp.flatten(exercises.map(exercise => exercise.muscleGroups))
       )
     );
   }, [exercises]);
@@ -129,14 +129,6 @@ function Workout(props) {
     return sets.filter(set => set.parentId === exercise.id);
   };
 
-  const renderSets = sets => {
-    if (!sets.length > 0) return null;
-
-    return sets.map((set, index) => (
-      <SetInput className={classes.setInput} label={`${index + 1}`} />
-    ));
-  };
-
   const renderAddExerciseButton = (options = {}) => {
     return (
       <Button
@@ -154,17 +146,11 @@ function Workout(props) {
     return (
       <ListItem key={exercise.id}>
         <Box flexGrow={1}>
-          <ListItemText
-            primary={exercise.name}
-            secondary={renderSets(getSetsForExercise(exercise))}
+          <ExerciseCard
+            exerciseName={exercise.name}
+            sets={getSetsForExercise(exercise)}
+            onAddSet={() => onAddSet(exercise.id)}
           />
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => onAddSet(exercise.id)}
-          >
-            Add Set
-          </Button>
         </Box>
       </ListItem>
     );

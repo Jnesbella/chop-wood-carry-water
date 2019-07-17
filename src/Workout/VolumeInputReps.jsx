@@ -1,9 +1,10 @@
 import React from "react";
-import { TextField } from "@material-ui/core";
+import { TextField, InputAdornment } from "@material-ui/core";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
 
-const LABEL = "reps";
+const LABEL = "volume";
+const ADORNMENT = "reps";
 const AMRAP = "AMRAP";
 // const PLACEHOLDER = "e.g., 10, 10+, 8 - 12, 8 - 12+";
 // const REP_REGEX = /^\s*(\d+)\s*$/im;
@@ -12,7 +13,7 @@ const AMRAP = "AMRAP";
 function VolumeInputReps(props) {
   const { min, max, amrap, ...theRest } = props;
 
-  const getPlaceholder = () => {
+  const getHelperText = () => {
     const hasMin = !(fp.isNil(min) || min.length === 0);
     const hasMax = !(fp.isNil(max) || max.length === 0);
 
@@ -26,15 +27,19 @@ function VolumeInputReps(props) {
     return `${beginning}${middle}${end}`;
   };
 
-  const placeholder = getPlaceholder();
-
   return (
     <TextField
-      placeholder={placeholder}
-      label={LABEL}
+      // label={LABEL}
+      placeholder=""
       InputLabelProps={{
         shrink: true // placeholder.length > 0
       }}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">{ADORNMENT}</InputAdornment>
+        )
+      }}
+      helperText={getHelperText()}
       {...theRest}
     />
   );

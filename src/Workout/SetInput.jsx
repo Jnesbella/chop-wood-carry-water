@@ -20,7 +20,8 @@ import {
   ExpandLess,
   ExpandMore,
   Delete as DeleteIcon,
-  MoreHoriz as MoreHorizIcon
+  MoreHoriz as MoreHorizIcon,
+  Clear as ClearIcon
 } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import * as yup from "yup";
@@ -31,6 +32,10 @@ import WeightInput from "./IntensityInputWeight";
 const useStyles = makeStyles(theme => ({
   chip: {
     marginRight: theme.spacing(1)
+  },
+  inputDivider: {
+    position: "relative",
+    top: theme.spacing(2)
   }
 }));
 
@@ -139,17 +144,21 @@ function SetInput(props) {
         <Container maxWidth="xs">
           <List dense>
             <ListItem>
-              <ListItemIcon>
-                <Switch
-                  value={isAsManyRepsAsPossible}
-                  onChange={() =>
-                    setIsAsManyRepsAsPossible(!isAsManyRepsAsPossible)
-                  }
-                />
-              </ListItemIcon>
               <ListItemText
-                primary="AMRAP"
-                primaryTypographyProps={{ noWrap: true }}
+                primary="Set Options"
+                primaryTypographyProps={{
+                  variant: "subtitle1"
+                }}
+              />
+            </ListItem>
+
+            <ListItem>
+              <ListItemText
+                primary="Intensity"
+                primaryTypographyProps={{
+                  variant: "subtitle2",
+                  color: "textSecondary"
+                }}
               />
             </ListItem>
 
@@ -176,6 +185,31 @@ function SetInput(props) {
                   onChange={handleInputChange}
                 />
               </Box>
+            </ListItem>
+
+            <ListItem>
+              <ListItemText
+                primary="Volume"
+                primaryTypographyProps={{
+                  variant: "subtitle2",
+                  color: "textSecondary"
+                }}
+              />
+            </ListItem>
+
+            <ListItem>
+              <ListItemIcon>
+                <Switch
+                  value={isAsManyRepsAsPossible}
+                  onChange={() =>
+                    setIsAsManyRepsAsPossible(!isAsManyRepsAsPossible)
+                  }
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="AMRAP"
+                primaryTypographyProps={{ noWrap: true }}
+              />
             </ListItem>
 
             <ListItem>
@@ -232,22 +266,28 @@ function SetInput(props) {
   };
 
   return (
-    <Box py={1} className={className}>
+    <Box className={className}>
       <Box display="flex" flexWrap="nowrap" alignItems="center">
-        <Box mr={1}>
-          <TextField
-            name="label"
-            value=""
-            margin="dense"
-            placeholder={label}
-            label="Set"
-            InputLabelProps={{
-              shrink: true
-            }}
-          />
-        </Box>
+        <Chip
+          variant="outlined"
+          label={label}
+          className={classes.chip}
+          size="small"
+          color="primary"
+          clickable
+          onClick={() => setAdvanceOptionsOpen(true)}
+        />
 
-        <Box mr={1}>
+        {/* <Chip
+          label={<MoreHorizIcon />}
+          variant="outlined"
+          className={classes.chip}
+          size="small"
+        /> */}
+      </Box>
+
+      <Box display="flex" flexWrap="nowrap" alignItems="baseline">
+        <Box>
           <WeightInput
             name={INPUT_NAME_INTENSITY}
             value={values[INPUT_NAME_INTENSITY]}
@@ -258,7 +298,13 @@ function SetInput(props) {
           />
         </Box>
 
-        <Box mr={1}>
+        <Box px={1}>
+          <Box className={classes.inputDivider}>
+            <ClearIcon fontSize="small" />
+          </Box>
+        </Box>
+
+        <Box>
           <RepsInput
             name={INPUT_NAME_VOLUME}
             value={values[INPUT_NAME_VOLUME]}
@@ -269,27 +315,6 @@ function SetInput(props) {
             max={values[INPUT_NAME_VOLUME_MAX]}
             amrap={isAsManyRepsAsPossible}
           />
-        </Box>
-
-        <Box mr={1}>
-          <IconButton
-            className={classes.button}
-            aria-label="Delete"
-            // size="small"
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Box>
-
-        <Box>
-          <IconButton
-            className={classes.button}
-            aria-label="More"
-            onClick={() => setAdvanceOptionsOpen(true)}
-            // size="small"
-          >
-            <MoreHorizIcon />
-          </IconButton>
         </Box>
       </Box>
       {renderAdvanceOptions()}

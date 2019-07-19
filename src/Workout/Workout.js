@@ -159,22 +159,18 @@ function Workout(props) {
   function renderExercises() {
     return (
       <div className={classes.section}>
-        {renderSubtitle(
-          "Exercises",
-          exercises.length ? renderAddExerciseButton() : null
-        )}
+        {renderSubtitle("Exercises")}
 
         <List>
-          {exercises.length ? (
-            exercises.map(renderExercise)
-          ) : (
+          {exercises.map(renderExercise)}
+          {
             <ListItem>
               {renderAddExerciseButton({
                 fullWidth: true,
                 variant: "contained"
               })}
             </ListItem>
-          )}
+          }
         </List>
       </div>
     );

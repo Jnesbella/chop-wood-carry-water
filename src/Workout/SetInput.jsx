@@ -28,6 +28,7 @@ import * as yup from "yup";
 
 import RepsInput from "./VolumeInputReps";
 import WeightInput from "./IntensityInputWeight";
+import SetOptionsDrawer from "./SetOptionsDrawer";
 
 const useStyles = makeStyles(theme => ({
   chip: {
@@ -35,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   },
   inputDivider: {
     position: "relative",
-    top: theme.spacing(2)
+    top: theme.spacing(3)
   }
 }));
 
@@ -53,9 +54,9 @@ const VOLUME_SCHEMA_MAX = yup
 
 const INPUT_NAME_INTENSITY = "intensity";
 const INPUT_NAME_VOLUME = "volume";
-const INPUT_NAME_VOLUME_MIN = "volumeMin";
-const INPUT_NAME_VOLUME_MAX = "volumeMax";
-const INPUT_NAME_PERCENT_ONE_REP_MAX = "percentOneRepMax";
+export const INPUT_NAME_VOLUME_MIN = "volumeMin";
+export const INPUT_NAME_VOLUME_MAX = "volumeMax";
+export const INPUT_NAME_PERCENT_ONE_REP_MAX = "percentOneRepMax";
 
 function SetInput(props) {
   const { onChange, label, className } = props;
@@ -136,132 +137,32 @@ function SetInput(props) {
 
   const renderAdvanceOptions = () => {
     return (
-      <Drawer
-        anchor="bottom"
-        open={advanceOptionsOpen}
+      <SetOptionsDrawer
+        isOpen={advanceOptionsOpen}
         onClose={() => setAdvanceOptionsOpen(false)}
-      >
-        <Container maxWidth="xs">
-          <List dense>
-            <ListItem>
-              <ListItemText
-                primary="Set Options"
-                primaryTypographyProps={{
-                  variant: "subtitle1"
-                }}
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemText
-                primary="Intensity"
-                primaryTypographyProps={{
-                  variant: "subtitle2",
-                  color: "textSecondary"
-                }}
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemIcon>
-                <Switch
-                  value={isPercentOneRepMax}
-                  onChange={() => setIsPercentOneRepMax(!isPercentOneRepMax)}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="%1RM"
-                primaryTypographyProps={{ noWrap: true }}
-              />
-              <Box flex={1} display="flex" justifyContent="flex-end">
-                <TextField
-                  name={INPUT_NAME_PERCENT_ONE_REP_MAX}
-                  variant="outlined"
-                  margin="dense"
-                  label="%"
-                  disabled={!isPercentOneRepMax}
-                  inputRef={percentOneRepMaxRef}
-                  error={!validity[INPUT_NAME_PERCENT_ONE_REP_MAX]}
-                  onChange={handleInputChange}
-                />
-              </Box>
-            </ListItem>
-
-            <ListItem>
-              <ListItemText
-                primary="Volume"
-                primaryTypographyProps={{
-                  variant: "subtitle2",
-                  color: "textSecondary"
-                }}
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemIcon>
-                <Switch
-                  value={isAsManyRepsAsPossible}
-                  onChange={() =>
-                    setIsAsManyRepsAsPossible(!isAsManyRepsAsPossible)
-                  }
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="AMRAP"
-                primaryTypographyProps={{ noWrap: true }}
-              />
-            </ListItem>
-
-            <ListItem>
-              <ListItemIcon>
-                <Switch
-                  value={isRepRange}
-                  onChange={() => setIsRepRange(!isRepRange)}
-                />
-              </ListItemIcon>
-
-              <ListItemText
-                primary="Rep range"
-                primaryTypographyProps={{ noWrap: true }}
-              />
-
-              <Box
-                flex={5}
-                display="flex"
-                flexDirection="row"
-                alignItems="baseline"
-              >
-                <TextField
-                  name={INPUT_NAME_VOLUME_MIN}
-                  variant="outlined"
-                  margin="dense"
-                  label="min"
-                  value={values[INPUT_NAME_VOLUME_MIN]}
-                  disabled={!isRepRange}
-                  inputRef={volumeMinRef}
-                  error={!validity[INPUT_NAME_VOLUME_MIN]}
-                  onChange={handleInputChange}
-                />
-
-                <Box mx={1}>
-                  <Typography component="span">{"to"}</Typography>
-                </Box>
-
-                <TextField
-                  name={INPUT_NAME_VOLUME_MAX}
-                  variant="outlined"
-                  margin="dense"
-                  label="max"
-                  value={values[INPUT_NAME_VOLUME_MAX]}
-                  disabled={!isRepRange}
-                  error={!validity[INPUT_NAME_VOLUME_MAX]}
-                  onChange={handleInputChange}
-                />
-              </Box>
-            </ListItem>
-          </List>
-        </Container>
-      </Drawer>
+        isAsManyRepsAsPossible={isAsManyRepsAsPossible}
+        onToggleAsManyRepsAsPossibleSwitch={() =>
+          setIsAsManyRepsAsPossible(!isAsManyRepsAsPossible)
+        }
+        isPercentOneRepMax={isPercentOneRepMax}
+        onToggleOneRepMaxSwitch={() =>
+          setIsPercentOneRepMax(!isPercentOneRepMax)
+        }
+        percentOneRepMaxValue={values[INPUT_NAME_PERCENT_ONE_REP_MAX]}
+        percentOneRepMaxRef={percentOneRepMaxRef}
+        percentOneRepMaxError={!validity[INPUT_NAME_PERCENT_ONE_REP_MAX]}
+        onPercentOneRepMaxChange={handleInputChange}
+        isRepRange={isRepRange}
+        onToggleRepRangeSwitch={() => setIsRepRange(!isRepRange)}
+        repRangeMinValue={values[INPUT_NAME_VOLUME_MIN]}
+        repRangeMinRef={volumeMinRef}
+        repRangeMinError={!validity[INPUT_NAME_VOLUME_MIN]}
+        repRangeMaxValue={values[INPUT_NAME_VOLUME_MIN]}
+        onRepRangeMinChange={handleInputChange}
+        repRangeMaxValue={values[INPUT_NAME_VOLUME_MAX]}
+        repRangeMaxError={!validity[INPUT_NAME_VOLUME_MAX]}
+        onRepRangeMaxChange={handleInputChange}
+      />
     );
   };
 
@@ -277,13 +178,6 @@ function SetInput(props) {
           clickable
           onClick={() => setAdvanceOptionsOpen(true)}
         />
-
-        {/* <Chip
-          label={<MoreHorizIcon />}
-          variant="outlined"
-          className={classes.chip}
-          size="small"
-        /> */}
       </Box>
 
       <Box display="flex" flexWrap="nowrap" alignItems="baseline">
@@ -295,6 +189,7 @@ function SetInput(props) {
             error={!validity[INPUT_NAME_INTENSITY]}
             onChange={handleInputChange}
             percentOfOneRepMax={values[INPUT_NAME_PERCENT_ONE_REP_MAX]}
+            variant="outlined"
           />
         </Box>
 
@@ -314,6 +209,7 @@ function SetInput(props) {
             min={values[INPUT_NAME_VOLUME_MIN]}
             max={values[INPUT_NAME_VOLUME_MAX]}
             amrap={isAsManyRepsAsPossible}
+            variant="outlined"
           />
         </Box>
       </Box>

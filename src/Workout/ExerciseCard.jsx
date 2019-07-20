@@ -5,6 +5,9 @@ import fp from "lodash/fp";
 import { makeStyles } from "@material-ui/core/styles";
 
 import SetInput from "./SetInput";
+import { makeSwipeable } from "./Gestures";
+
+const SwipeableSetInput = makeSwipeable(SetInput);
 
 const useStyles = makeStyles(theme => ({
   setInput: {
@@ -34,7 +37,10 @@ function ExerciseCard(props) {
       <Box>
         {sets.map((set, index) => (
           <Box>
-            <SetInput className={classes.setInput} label={`Set ${index + 1}`} />
+            <SwipeableSetInput
+              className={classes.setInput}
+              label={`Set ${index + 1}`}
+            />
             {index !== sets.length - 1 && <Divider variant="middle" />}
           </Box>
         ))}

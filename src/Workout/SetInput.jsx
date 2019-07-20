@@ -1,28 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
-import {
-  Box,
-  Switch,
-  IconButton,
-  TextField,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Chip,
-  Typography,
-  Divider,
-  Drawer,
-  Container
-} from "@material-ui/core";
-import {
-  ExpandLess,
-  ExpandMore,
-  Delete as DeleteIcon,
-  MoreHoriz as MoreHorizIcon,
-  Clear as ClearIcon
-} from "@material-ui/icons";
+import { Box, Chip } from "@material-ui/core";
+import { Clear as ClearIcon } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import * as yup from "yup";
 

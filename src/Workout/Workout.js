@@ -6,17 +6,10 @@ import {
   Typography,
   List,
   ListItem,
-  ListItemText,
   Chip,
   Divider,
   Button,
-  Box,
-  Table,
-  TableHead,
-  TableCell,
-  TableBody,
-  TableRow,
-  TextField
+  Box
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddExerciseModal from "../AddExercise/AddExerciseModal";
@@ -62,7 +55,7 @@ const renderSubtitle = (text, other) => {
 };
 
 function Workout(props) {
-  const { exercises, sets, onAddExercises, onAddSet } = props;
+  const { exercises, sets, onAddExercises, onAddSet, onDeleteSet } = props;
   const classes = useStyles();
   const [muscleGroups, setMuscleGroups] = React.useState([]);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -150,6 +143,7 @@ function Workout(props) {
             exerciseName={exercise.name}
             sets={getSetsForExercise(exercise)}
             onAddSet={() => onAddSet(exercise.id)}
+            onDeleteSet={onDeleteSet}
           />
         </Box>
       </ListItem>
@@ -215,7 +209,8 @@ Workout.propTypes = {
   exercises: PropTypes.array,
   sets: PropTypes.array,
   onAddExercises: PropTypes.func,
-  onAddSet: PropTypes.func
+  onAddSet: PropTypes.func,
+  onDeleteSet: PropTypes.func
 };
 
 Workout.defaultProps = {
@@ -223,7 +218,8 @@ Workout.defaultProps = {
   exercises: [],
   sets: [],
   onAddExercises: fp.noop,
-  onAddSet: fp.noop
+  onAddSet: fp.noop,
+  onDeleteSet: fp.noop
 };
 
 export default Workout;

@@ -20,35 +20,38 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DELETE_BUTTON_WIDTH = 68;
-
 export const makeSwipeable = Component => {
   return function(props) {
     const { onDelete } = props;
     const classes = useStyles();
-    const ref = React.useRef(null);
+    const buttonRef = React.useRef(null);
     const controls = useAnimation();
-    const [buttonWidth, setButtonWidth] = React.useState(DELETE_BUTTON_WIDTH);
+    const [minButtonWidth, setMinButtonWidth] = React.useState(0);
+    const [buttonWidth, setButtonWidth] = React.useState("initial");
     const x = useMotionValue(0);
+
+    React.useEffect(() => {
+      setMinButtonWidth(buttonRef.current.clientWidth);
+    }, [buttonRef]);
 
     React.useEffect(
       () =>
         x.onChange(latest => {
-          setButtonWidth(Math.max(DELETE_BUTTON_WIDTH, Math.abs(latest)));
+          setButtonWidth(Math.max(minButtonWidth, Math.abs(latest)));
         }),
       []
     );
 
     const handleDragEnd = (event, info) => {
-      if (Math.abs(info.point.x) > DELETE_BUTTON_WIDTH / 2) {
-        controls.start({ x: DELETE_BUTTON_WIDTH * -1 });
+      if (Math.abs(info.point.x) > minButtonWidth / 2) {
+        controls.start({ x: minButtonWidth * -1 });
       } else {
         controls.start({ x: 0 });
       }
     };
 
     return (
-      <div ref={ref}>
+      <div>
         <motion.div
           className={classes.container}
           drag="x"
@@ -66,6 +69,7 @@ export const makeSwipeable = Component => {
               style={{ width: buttonWidth }}
               onClick={onDelete}
               className={classes.button}
+              ref={buttonRef}
             >
               Delete
             </Button>

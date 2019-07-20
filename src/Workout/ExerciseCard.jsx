@@ -3,6 +3,7 @@ import { Card, Box, Typography, Button, Divider } from "@material-ui/core";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
 import { makeStyles } from "@material-ui/core/styles";
+import uuidv4 from "uuid/v4";
 
 import SetInput from "./SetInput";
 import { makeSwipeable } from "./Gestures";
@@ -19,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ExerciseCard(props) {
-  const { exerciseName, sets, onAddSet } = props;
+  const { exerciseName, sets, onAddSet, onDeleteSet } = props;
   const classes = useStyles();
 
   const renderCardHeader = () => {
@@ -36,10 +37,11 @@ function ExerciseCard(props) {
     return (
       <Box>
         {sets.map((set, index) => (
-          <Box>
+          <Box key={uuidv4()}>
             <SwipeableSetInput
               className={classes.setInput}
               label={`Set ${index + 1}`}
+              onDelete={() => onDeleteSet(set.id)}
             />
             {index !== sets.length - 1 && <Divider variant="middle" />}
           </Box>
@@ -70,13 +72,15 @@ function ExerciseCard(props) {
 ExerciseCard.protoTypes = {
   exerciseName: PropTypes.string,
   sets: PropTypes.array,
-  onAddSet: PropTypes.func
+  onAddSet: PropTypes.func,
+  onDeleteSet: PropTypes.func
 };
 
 ExerciseCard.defaultProps = {
   exerciseName: "",
   sets: [],
-  onAddSet: fp.noop
+  onAddSet: fp.noop,
+  onDeleteSet: fp.noop
 };
 
 export default ExerciseCard;

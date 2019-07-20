@@ -1,4 +1,4 @@
-import { ADD_EXERCISES, ADD_SET } from "./workout.actions";
+import { ADD_EXERCISES, ADD_SET, DELETE_SET } from "./workout.actions";
 
 export const initialState = {
   name: "Chest & Arms",
@@ -22,6 +22,12 @@ const ACTION_HANDLERS = {
     return {
       ...state,
       sets: [...state.sets, action.payload]
+    };
+  },
+  [DELETE_SET]: (state, action) => {
+    return {
+      ...state,
+      sets: state.sets.filter(set => set.id !== action.payload)
     };
   }
 };

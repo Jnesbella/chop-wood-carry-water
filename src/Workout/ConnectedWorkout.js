@@ -2,7 +2,11 @@ import { connect } from "react-redux";
 
 import Workout from "./Workout";
 
-import { addExercises, addSet } from "../Redux/Workout/workout.actions";
+import {
+  addExercises,
+  addSet,
+  deleteSet
+} from "../Redux/Workout/workout.actions";
 
 function mapStateToProps(state) {
   const { name, description, exercises, sets } = state.workout;
@@ -22,7 +26,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   onAddExercises: addExercises,
-  onAddSet: addSet
+  onAddSet: addSet,
+  onDeleteSet: deleteSet
 };
 
 export default connect(

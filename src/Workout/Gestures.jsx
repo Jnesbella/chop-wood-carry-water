@@ -4,8 +4,13 @@ import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { red } from "@material-ui/core/colors";
 
+import { onClickOutside } from "./utils";
+
 const useStyles = makeStyles(theme => ({
-  container: {
+  root: {
+    overflow: "hidden"
+  },
+  motionContainer: {
     display: "flex"
   },
   buttonsContainer: {
@@ -29,10 +34,15 @@ export const makeSwipeable = Component => {
     const [minButtonWidth, setMinButtonWidth] = React.useState(0);
     const [buttonWidth, setButtonWidth] = React.useState("initial");
     const x = useMotionValue(0);
+    const ref = React.useRef(null);
 
     React.useEffect(() => {
       setMinButtonWidth(buttonRef.current.clientWidth);
     }, [buttonRef]);
+
+    React.useEffect(() => {
+      onClickOutside(ref.current, () => controls.start({ x: 0 }));
+    }, [ref]);
 
     React.useEffect(
       () =>
@@ -51,9 +61,9 @@ export const makeSwipeable = Component => {
     };
 
     return (
-      <div>
+      <div className={classes.root} ref={ref}>
         <motion.div
-          className={classes.container}
+          className={classes.motionContainer}
           drag="x"
           dragConstraints={{ right: 0 }}
           dragElastic={0}

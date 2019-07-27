@@ -1,4 +1,11 @@
-import { ADD_EXERCISES, ADD_SET, DELETE_SET } from "./workout.actions";
+import { reorderExercises } from "../../Utils/data-utils";
+
+import {
+  ADD_EXERCISES,
+  ADD_SET,
+  DELETE_SET,
+  REORDER_EXERCISES
+} from "./workout.actions";
 
 export const initialState = {
   name: "Chest & Arms",
@@ -28,6 +35,12 @@ const ACTION_HANDLERS = {
     return {
       ...state,
       sets: state.sets.filter(set => set.id !== action.payload)
+    };
+  },
+  [REORDER_EXERCISES]: (state, action) => {
+    return {
+      ...state,
+      exercises: reorderExercises(state.exercises, action.payload)
     };
   }
 };

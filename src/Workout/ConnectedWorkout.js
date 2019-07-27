@@ -5,7 +5,8 @@ import Workout from "./Workout";
 import {
   addExercises,
   addSet,
-  deleteSet
+  deleteSet,
+  reorderExercises
 } from "../Redux/Workout/workout.actions";
 
 function mapStateToProps(state) {
@@ -27,7 +28,8 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   onAddExercises: addExercises,
   onAddSet: addSet,
-  onDeleteSet: deleteSet
+  onDeleteSet: deleteSet,
+  onReorderSets: reorderExercises
 };
 
 export default connect(

@@ -5,7 +5,7 @@ import fp from "lodash/fp";
 
 const LABEL = "intensity";
 const ADORNMENT = "lbs";
-const PERCENT = "%";
+const PERCENT = "%1RM";
 
 function IntensityInputWeight(props) {
   const { percentOfOneRepMax, ...theRest } = props;

@@ -19,6 +19,10 @@ import {
   INPUT_NAME_VOLUME_MIN
 } from "./SetInput";
 
+// More options:
+// Optional sets
+// Rest time
+
 function SetOptionsDrawer(props) {
   const {
     isOpen,

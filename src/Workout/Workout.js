@@ -2,19 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
 import classNames from "classnames";
-import {
-  Typography,
-  List,
-  ListItem,
-  Chip,
-  Divider,
-  Button,
-  Box
-} from "@material-ui/core";
+import { Typography, Chip, Divider, Button, ListItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddExerciseModal from "../AddExercise/AddExerciseModal";
 
-import ExerciseCard from "./ExerciseCard";
+import { DroppableExerciseList as ExerciseList } from "./ExerciseList";
 
 const useStyles = makeStyles(theme => ({
   workoutContainer: {
@@ -55,7 +47,14 @@ const renderSubtitle = (text, other) => {
 };
 
 function Workout(props) {
-  const { exercises, sets, onAddExercises, onAddSet, onDeleteSet } = props;
+  const {
+    exercises,
+    sets,
+    onAddExercises,
+    onAddSet,
+    onDeleteSet,
+    onReorderSets
+  } = props;
   const classes = useStyles();
   const [muscleGroups, setMuscleGroups] = React.useState([]);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -63,9 +62,11 @@ function Workout(props) {
 
   React.useEffect(() => {
     setMuscleGroups(
-      fp.uniqBy(group => group.label)(
-        fp.flatten(exercises.map(exercise => exercise.muscleGroups))
-      )
+      fp.flow(
+        fp.flatten,
+        fp.uniqBy(group => group.label),
+        fp.sortBy(group => group.label)
+      )(exercises.map(exercise => exercise.muscleGroups))
     );
   }, [exercises]);
 
@@ -114,12 +115,8 @@ function Workout(props) {
     );
   }
 
-  function handleAddExercise() {
+  const handleAddExercise = () => {
     setModalOpen(true);
-  }
-
-  const getSetsForExercise = exercise => {
-    return sets.filter(set => set.parentId === exercise.id);
   };
 
   const renderAddExerciseButton = (options = {}) => {
@@ -135,37 +132,24 @@ function Workout(props) {
     );
   };
 
-  const renderExercise = exercise => {
-    return (
-      <ListItem key={exercise.id}>
-        <Box flexGrow={1}>
-          <ExerciseCard
-            exerciseName={exercise.name}
-            sets={getSetsForExercise(exercise)}
-            onAddSet={() => onAddSet(exercise.id)}
-            onDeleteSet={onDeleteSet}
-          />
-        </Box>
-      </ListItem>
-    );
-  };
-
   function renderExercises() {
     return (
       <div className={classes.section}>
         {renderSubtitle("Exercises")}
-
-        <List>
-          {exercises.map(renderExercise)}
-          {
-            <ListItem>
-              {renderAddExerciseButton({
-                fullWidth: true,
-                variant: "contained"
-              })}
-            </ListItem>
-          }
-        </List>
+        <ExerciseList
+          exercises={exercises}
+          sets={sets}
+          onAddSet={onAddSet}
+          onDeleteSet={onDeleteSet}
+          onReorder={onReorderSets}
+        >
+          <ListItem>
+            {renderAddExerciseButton({
+              fullWidth: true,
+              variant: "contained"
+            })}
+          </ListItem>
+        </ExerciseList>
       </div>
     );
   }
@@ -214,12 +198,14 @@ Workout.propTypes = {
 };
 
 Workout.defaultProps = {
-  description: null,
+  name: "",
+  description: "",
   exercises: [],
   sets: [],
   onAddExercises: fp.noop,
   onAddSet: fp.noop,
-  onDeleteSet: fp.noop
+  onDeleteSet: fp.noop,
+  onReorderSets: fp.noop
 };
 
 export default Workout;

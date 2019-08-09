@@ -7,7 +7,8 @@ import {
   ExpansionPanel,
   ExpansionPanelSummary,
   ExpansionPanelDetails,
-  ExpansionPanelActions
+  ExpansionPanelActions,
+  ListItem
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
@@ -129,14 +130,27 @@ ExerciseCard.defaultProps = {
 export default ExerciseCard;
 
 export function DraggableExerciseCard(props) {
-  const { id, index, ...theRest } = props;
+  const { id, index, key, ...theRest } = props;
 
   return (
-    <Draggable key={id} draggableId={id} index={index}>
+    <Draggable key={key} draggableId={id} index={index}>
       {(provided, snapshot) => {
+        // const style = {
+        //   // maxHeight: snapshot.isDragging ? "64px" : undefined,
+        //   ...provided.draggableProps.style
+        // };
+
         return (
           <div ref={provided.innerRef} {...provided.draggableProps}>
-            <ExerciseCard headerProps={provided.dragHandleProps} {...theRest} />
+            <ListItem key={id}>
+              <Box flexGrow={1}>
+                <ExerciseCard
+                  headerProps={provided.dragHandleProps}
+                  ref={provided.innerRef}
+                  {...theRest}
+                />
+              </Box>
+            </ListItem>
           </div>
         );
       }}

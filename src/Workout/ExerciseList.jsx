@@ -4,6 +4,8 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { List, Box, ListItem } from "@material-ui/core";
 import fp from "lodash/fp";
 
+import ExercisePlaceholder from "./ExercisePlaceholder";
+
 import { DraggableExerciseCard as ExerciseCard } from "./ExerciseCard";
 
 function ExerciseList(props) {
@@ -12,7 +14,6 @@ function ExerciseList(props) {
     sets,
     onAddSet,
     onDeleteSet,
-    children,
     forceExercisesCollapsed
   } = props;
 
@@ -36,29 +37,21 @@ function ExerciseList(props) {
     const expanded = !!expandedExercises[id] && !forceExercisesCollapsed;
 
     return (
-      <ListItem key={exercise.id}>
-        <Box flexGrow={1}>
-          <ExerciseCard
-            id={id}
-            index={index}
-            exerciseName={exercise.name}
-            sets={getSetsForExercise(exercise)}
-            onAddSet={() => onAddSet(id)}
-            onDeleteSet={onDeleteSet}
-            expanded={expanded}
-            onToggle={handleToggleExercise(id)}
-          />
-        </Box>
-      </ListItem>
+      <ExerciseCard
+        key={id}
+        id={id}
+        index={index}
+        exerciseName={exercise.name}
+        sets={getSetsForExercise(exercise)}
+        onAddSet={() => onAddSet(id)}
+        onDeleteSet={onDeleteSet}
+        expanded={expanded}
+        onToggle={handleToggleExercise(id)}
+      />
     );
   };
 
-  return (
-    <List>
-      {exercises.map(renderExercise)}
-      {children}
-    </List>
-  );
+  return <div>{exercises.map(renderExercise)}</div>;
 }
 
 ExerciseList.defaultProps = {
@@ -89,19 +82,23 @@ export function DroppableExerciseList(props) {
   };
 
   return (
-    <DragDropContext
-      onDragEnd={handleDragEnd}
-      onBeforeDragStart={() => setDragging(true)}
-    >
-      <Droppable droppableId="droppable" type="EXERCISE_CARD">
-        {(provided, snapshotDrop) => {
-          return (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
-              <ExerciseList forceExercisesCollapsed={dragging} {...theRest} />
-            </div>
-          );
-        }}
-      </Droppable>
-    </DragDropContext>
+    <List>
+      <DragDropContext
+        onDragEnd={handleDragEnd}
+        onBeforeDragStart={() => setDragging(true)}
+      >
+        <Droppable droppableId="droppable" type="EXERCISE_CARD">
+          {(provided, snapshot) => {
+            return (
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                <ExerciseList forceExercisesCollapsed={dragging} {...theRest} />
+
+                {provided.placeholder}
+              </div>
+            );
+          }}
+        </Droppable>
+      </DragDropContext>
+    </List>
   );
 }

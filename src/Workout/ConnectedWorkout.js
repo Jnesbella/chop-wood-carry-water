@@ -13,8 +13,18 @@ function mapStateToProps(state) {
   const { name, description, exercises, sets } = state.workout;
   const { exercises: exercisesList } = state.data;
 
-  const mappedExercises = exercises.map(exercise =>
-    exercisesList.find(e => e.id === exercise.exerciseId)
+  const mappedExercises = exercises.map(
+    ({ id: idOfExerciseGroup, exerciseId }) => {
+      const exercise = exercisesList.find(
+        ({ id: idOfExercise }) => idOfExercise === exerciseId
+      );
+
+      return {
+        ...exercise,
+        id: idOfExerciseGroup,
+        exerciseId
+      };
+    }
   );
 
   return {

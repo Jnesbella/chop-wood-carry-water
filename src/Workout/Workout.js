@@ -119,13 +119,14 @@ function Workout(props) {
     setModalOpen(true);
   };
 
-  const renderAddExerciseButton = (options = {}) => {
+  const renderAddExerciseButton = () => {
     return (
       <Button
         className={classes.addExerciseButton}
         onClick={handleAddExercise}
         color="primary"
-        {...options}
+        fullWidth
+        variant="contained"
       >
         Add exercises
       </Button>
@@ -142,14 +143,8 @@ function Workout(props) {
           onAddSet={onAddSet}
           onDeleteSet={onDeleteSet}
           onReorder={onReorderSets}
-        >
-          <ListItem>
-            {renderAddExerciseButton({
-              fullWidth: true,
-              variant: "contained"
-            })}
-          </ListItem>
-        </ExerciseList>
+        />
+        <ListItem>{renderAddExerciseButton()}</ListItem>
       </div>
     );
   }

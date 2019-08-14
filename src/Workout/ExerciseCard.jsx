@@ -15,7 +15,8 @@ import fp from "lodash/fp";
 import { makeStyles } from "@material-ui/core/styles";
 import uuidv4 from "uuid/v4";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { Draggable } from "react-beautiful-dnd";
+import { useDrag, DragPreviewImage } from "react-dnd";
+import domtoimage from "dom-to-image";
 
 import SetInput from "./SetInput";
 import { makeSwipeable } from "./Gestures";
@@ -34,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function ExerciseCard(props) {
+const ExerciseCard = React.forwardRef((props, ref) => {
   const {
     exerciseName,
     sets,
@@ -54,11 +55,11 @@ function ExerciseCard(props) {
         width="100%"
         {...headerProps}
       >
-        <box display="flex">
+        <Box display="flex">
           <Typography component="span" color="textPrimary">
             {exerciseName}
           </Typography>
-        </box>
+        </Box>
         {!expanded && (
           <Typography color="textSecondary">{sets.length} sets </Typography>
         )}
@@ -94,7 +95,7 @@ function ExerciseCard(props) {
   };
 
   return (
-    <ExpansionPanel expanded={expanded} onChange={onToggle}>
+    <ExpansionPanel expanded={expanded} onChange={onToggle} ref={ref}>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
         {renderCardHeader()}
       </ExpansionPanelSummary>
@@ -107,7 +108,7 @@ function ExerciseCard(props) {
       <ExpansionPanelActions>{renderAddSetButton()}</ExpansionPanelActions>
     </ExpansionPanel>
   );
-}
+});
 
 ExerciseCard.protoTypes = {
   exerciseName: PropTypes.string,
@@ -129,31 +130,45 @@ ExerciseCard.defaultProps = {
 
 export default ExerciseCard;
 
+export const DRAG_ITEM_TYPE_EXERCISE = "DRAG_ITEM_TYPE_EXERCISE";
+
 export function DraggableExerciseCard(props) {
   const { id, index, key, ...theRest } = props;
 
-  return (
-    <Draggable key={key} draggableId={id} index={index}>
-      {(provided, snapshot) => {
-        // const style = {
-        //   // maxHeight: snapshot.isDragging ? "64px" : undefined,
-        //   ...provided.draggableProps.style
-        // };
+  const [previewImage, setPreviewImage] = React.useState(null);
+  const exerciseCardRef = React.useRef(null);
+  const [collectedProps, dragHandleRef, dragPreviewConnector] = useDrag({
+    item: {
+      type: DRAG_ITEM_TYPE_EXERCISE,
+      id
+    },
+    collect: (monitor, props) => ({
+      isDragging: monitor.isDragging()
+    })
+  });
+  React.useEffect(() => {
+    const updateDragSourcePreview = async () => {
+      const { current: node } = exerciseCardRef;
+      if (!node) return;
 
-        return (
-          <div ref={provided.innerRef} {...provided.draggableProps}>
-            <ListItem key={id}>
-              <Box flexGrow={1}>
-                <ExerciseCard
-                  headerProps={provided.dragHandleProps}
-                  ref={provided.innerRef}
-                  {...theRest}
-                />
-              </Box>
-            </ListItem>
-          </div>
-        );
-      }}
-    </Draggable>
+      const src = await domtoimage.toPng(node);
+      setPreviewImage(src);
+    };
+    updateDragSourcePreview();
+  }, [collectedProps.isDragging, exerciseCardRef.current]);
+
+  return (
+    <React.Fragment>
+      <DragPreviewImage connect={dragPreviewConnector} src={previewImage} />
+      <ListItem
+        key={id}
+        ref={dragHandleRef}
+        style={{ visibility: collectedProps.isDragging ? "hidden" : "visible" }}
+      >
+        <Box flexGrow={1}>
+          <ExerciseCard {...theRest} ref={exerciseCardRef} />
+        </Box>
+      </ListItem>
+    </React.Fragment>
   );
 }

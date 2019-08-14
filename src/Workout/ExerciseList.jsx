@@ -1,12 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { List, Box, ListItem } from "@material-ui/core";
 import fp from "lodash/fp";
+import { useDragLayer, useDrop } from "react-dnd";
 
-import ExercisePlaceholder from "./ExercisePlaceholder";
-
-import { DraggableExerciseCard as ExerciseCard } from "./ExerciseCard";
+import {
+  DraggableExerciseCard as ExerciseCard,
+  DRAG_ITEM_TYPE_EXERCISE
+} from "./ExerciseCard";
 
 function ExerciseList(props) {
   const {
@@ -67,38 +68,38 @@ export default ExerciseList;
 export function DroppableExerciseList(props) {
   const { onReorder, ...theRest } = props;
 
-  const [dragging, setDragging] = React.useState(false);
+  // const [dragging, setDragging] = React.useState(false);
+  const collectedProps = useDragLayer((monitor, props) => ({
+    isDragging: monitor.isDragging()
+  }));
+  const [_, dropRef] = useDrop({
+    accept: DRAG_ITEM_TYPE_EXERCISE
+  });
 
-  const handleDragEnd = result => {
-    setDragging(false);
+  // React.useEffect(() => {
+  //   setDragging(collectedProps.isDragging);
+  // }, [collectedProps.isDragging]);
 
-    const { source, destination } = result;
-    if (!destination || destination.droppableId !== source.droppableId) return;
+  // const handleDragEnd = result => {
+  //   setDragging(false);
 
-    onReorder({
-      sourceIndex: source.index,
-      destinationIndex: destination.index
-    });
-  };
+  //   const { source, destination } = result;
+  //   if (!destination || destination.droppableId !== source.droppableId) return;
+
+  //   onReorder({
+  //     sourceIndex: source.index,
+  //     destinationIndex: destination.index
+  //   });
+  // };
+
+  // const handleDragStart = () => setDragging(true);
 
   return (
-    <List>
-      <DragDropContext
-        onDragEnd={handleDragEnd}
-        onBeforeDragStart={() => setDragging(true)}
-      >
-        <Droppable droppableId="droppable" type="EXERCISE_CARD">
-          {(provided, snapshot) => {
-            return (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                <ExerciseList forceExercisesCollapsed={dragging} {...theRest} />
-
-                {provided.placeholder}
-              </div>
-            );
-          }}
-        </Droppable>
-      </DragDropContext>
+    <List ref={dropRef}>
+      <ExerciseList
+        forceExercisesCollapsed={collectedProps.isDragging}
+        {...theRest}
+      />
     </List>
   );
 }

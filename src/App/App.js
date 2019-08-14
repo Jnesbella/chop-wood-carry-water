@@ -16,6 +16,8 @@ import {
   makeStyles
 } from "@material-ui/core/styles";
 import { deepPurple, grey } from "@material-ui/core/colors";
+import { DndProvider } from "react-dnd";
+import HTML5Backend from "react-dnd-html5-backend";
 
 import Workout from "../Workout";
 
@@ -67,8 +69,10 @@ function App(props) {
         <MuiThemeProvider theme={theme}>
           <Container maxWidth="xs">
             <Paper square className={classes.content}>
-              {renderHeader()}
-              {renderContent()}
+              <DndProvider backend={HTML5Backend}>
+                {renderHeader()}
+                {renderContent()}
+              </DndProvider>
             </Paper>
           </Container>
         </MuiThemeProvider>

@@ -142,7 +142,10 @@ export function DraggableExerciseCard(props) {
       type: DRAG_ITEM_TYPE_EXERCISE,
       id
     },
-    collect: (monitor, props) => ({
+    previewOptions: {
+      captureDraggingState: true
+    },
+    collect: monitor => ({
       isDragging: monitor.isDragging()
     })
   });
@@ -151,7 +154,16 @@ export function DraggableExerciseCard(props) {
       const { current: node } = exerciseCardRef;
       if (!node) return;
 
-      const src = await domtoimage.toPng(node);
+      const scaleBy = 2;
+
+      const src = await domtoimage.toPng(node, {
+        width: 364 * scaleBy,
+        height: 48 * scaleBy,
+        style: {
+          transformOrigin: "top left",
+          transform: `scale(${scaleBy})`
+        }
+      });
       setPreviewImage(src);
     };
     updateDragSourcePreview();

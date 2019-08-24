@@ -15,8 +15,8 @@ import fp from "lodash/fp";
 import { makeStyles } from "@material-ui/core/styles";
 import uuidv4 from "uuid/v4";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { useDrag, DragPreviewImage } from "react-dnd";
-import domtoimage from "dom-to-image";
+
+import useDrag from "../Hooks/useDrag";
 
 import SetInput from "./SetInput";
 import { makeSwipeable } from "./Gestures";
@@ -61,7 +61,9 @@ const ExerciseCard = React.forwardRef((props, ref) => {
           </Typography>
         </Box>
         {!expanded && (
-          <Typography color="textSecondary">{sets.length} sets </Typography>
+          <Typography className="exercise-set-count" color="textSecondary">
+            {sets.length} sets{" "}
+          </Typography>
         )}
       </Box>
     );
@@ -133,52 +135,28 @@ export default ExerciseCard;
 export const DRAG_ITEM_TYPE_EXERCISE = "DRAG_ITEM_TYPE_EXERCISE";
 
 export function DraggableExerciseCard(props) {
-  const { id, index, key, ...theRest } = props;
+  const { id, index, key, style, ...theRest } = props;
 
-  const [previewImage, setPreviewImage] = React.useState(null);
-  const exerciseCardRef = React.useRef(null);
-  const [collectedProps, dragHandleRef, dragPreviewConnector] = useDrag({
-    item: {
-      type: DRAG_ITEM_TYPE_EXERCISE,
-      id
-    },
-    previewOptions: {
-      captureDraggingState: true
-    },
-    collect: monitor => ({
-      isDragging: monitor.isDragging()
-    })
-  });
-  React.useEffect(() => {
-    const updateDragSourcePreview = async () => {
-      const { current: node } = exerciseCardRef;
-      if (!node) return;
-
-      const scaleBy = 2;
-
-      const src = await domtoimage.toPng(node, {
-        width: 364 * scaleBy,
-        height: 48 * scaleBy,
-        style: {
-          transformOrigin: "top left",
-          transform: `scale(${scaleBy})`
-        }
-      });
-      setPreviewImage(src);
-    };
-    updateDragSourcePreview();
-  }, [collectedProps.isDragging, exerciseCardRef.current]);
+  const [
+    collectedProps,
+    dragHandleRef,
+    drafPreviewSourceRef,
+    DragPreviewImage
+  ] = useDrag(DRAG_ITEM_TYPE_EXERCISE, id, index);
 
   return (
     <React.Fragment>
-      <DragPreviewImage connect={dragPreviewConnector} src={previewImage} />
+      <DragPreviewImage />
       <ListItem
         key={id}
         ref={dragHandleRef}
-        style={{ visibility: collectedProps.isDragging ? "hidden" : "visible" }}
+        style={{
+          ...style,
+          visibility: collectedProps.isDragging ? "hidden" : "visible"
+        }}
       >
         <Box flexGrow={1}>
-          <ExerciseCard {...theRest} ref={exerciseCardRef} />
+          <ExerciseCard {...theRest} ref={drafPreviewSourceRef} />
         </Box>
       </ListItem>
     </React.Fragment>

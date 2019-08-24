@@ -2,7 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import { List, Box, ListItem } from "@material-ui/core";
 import fp from "lodash/fp";
-import { useDragLayer, useDrop } from "react-dnd";
+
+import useDrop from "../Hooks/useDrop";
+import useDragLayer from "../Hooks/useDragLayer";
 
 import {
   DraggableExerciseCard as ExerciseCard,
@@ -15,7 +17,8 @@ function ExerciseList(props) {
     sets,
     onAddSet,
     onDeleteSet,
-    forceExercisesCollapsed
+    forceExercisesCollapsed,
+    itemStylerFunc
   } = props;
 
   const [expandedExercises, setExpandedExercises] = React.useState({});
@@ -48,6 +51,7 @@ function ExerciseList(props) {
         onDeleteSet={onDeleteSet}
         expanded={expanded}
         onToggle={handleToggleExercise(id)}
+        style={itemStylerFunc(index)}
       />
     );
   };
@@ -68,13 +72,8 @@ export default ExerciseList;
 export function DroppableExerciseList(props) {
   const { onReorder, ...theRest } = props;
 
-  // const [dragging, setDragging] = React.useState(false);
-  const collectedProps = useDragLayer((monitor, props) => ({
-    isDragging: monitor.isDragging()
-  }));
-  const [_, dropRef] = useDrop({
-    accept: DRAG_ITEM_TYPE_EXERCISE
-  });
+  const [dropRef] = useDrop(DRAG_ITEM_TYPE_EXERCISE);
+  const [isDragging, getItemStyles] = useDragLayer();
 
   // React.useEffect(() => {
   //   setDragging(collectedProps.isDragging);
@@ -97,7 +96,8 @@ export function DroppableExerciseList(props) {
   return (
     <List ref={dropRef}>
       <ExerciseList
-        forceExercisesCollapsed={collectedProps.isDragging}
+        forceExercisesCollapsed={isDragging}
+        itemStylerFunc={getItemStyles}
         {...theRest}
       />
     </List>

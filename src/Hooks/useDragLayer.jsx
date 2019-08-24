@@ -46,43 +46,48 @@ function isItemEffectedByDrag(start, end, toCheck) {
 }
 
 export default function() {
-  const { isDragging, getStyles } = useDragLayer((monitor, props) => {
-    const { id, index: draggingItemIndex } = monitor.getItem() || {};
+  const { isDragging, getStyles, currentDragIndex } = useDragLayer(
+    (monitor, props) => {
+      const { id, index: draggingItemIndex } = monitor.getItem() || {};
 
-    const differenceFromInitialOffset =
-      monitor.getDifferenceFromInitialOffset() || EMPTY_OFFSET;
-    const dragDirection = getDragDirection(differenceFromInitialOffset);
+      const differenceFromInitialOffset =
+        monitor.getDifferenceFromInitialOffset() || EMPTY_OFFSET;
+      const dragDirection = getDragDirection(differenceFromInitialOffset);
 
-    const reachOfEffect = !fp.isNil(draggingItemIndex)
-      ? getBoundaryIndex(
-          differenceFromInitialOffset,
-          draggingItemIndex,
-          dragDirection
-        )
-      : draggingItemIndex;
+      const draggingOverIndex = !fp.isNil(draggingItemIndex)
+        ? getBoundaryIndex(
+            differenceFromInitialOffset,
+            draggingItemIndex,
+            dragDirection
+          )
+        : draggingItemIndex;
 
-    return {
-      isDragging: monitor.isDragging(),
-      getStyles: itemIndex => {
-        const effectedByDrag = isItemEffectedByDrag(
-          draggingItemIndex,
-          reachOfEffect,
-          itemIndex
-        );
-        const isItemBeingDragged = itemIndex === draggingItemIndex;
+      return {
+        isDragging: monitor.isDragging(),
+        getStyles: itemIndex => {
+          const effectedByDrag = isItemEffectedByDrag(
+            draggingItemIndex,
+            draggingOverIndex,
+            itemIndex
+          );
+          const isItemBeingDragged = itemIndex === draggingItemIndex;
 
-        if (!effectedByDrag || isItemBeingDragged) return {};
+          if (!effectedByDrag || isItemBeingDragged) return {};
 
-        const translateX = 0;
-        const translateY =
-          dragDirection === DRAG_DIRECTION_UP ? ITEM_HEIGHT : ITEM_HEIGHT * -1;
+          const translateX = 0;
+          const translateY =
+            dragDirection === DRAG_DIRECTION_UP
+              ? ITEM_HEIGHT
+              : ITEM_HEIGHT * -1;
 
-        return {
-          transform: `translate(${translateX}px, ${translateY}px)`
-        };
-      }
-    };
-  });
+          return {
+            transform: `translate(${translateX}px, ${translateY}px)`
+          };
+        },
+        currentDragIndex: draggingOverIndex
+      };
+    }
+  );
 
-  return [isDragging, getStyles];
+  return [isDragging, getStyles, currentDragIndex];
 }

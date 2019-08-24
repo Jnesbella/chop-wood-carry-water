@@ -39,7 +39,7 @@ const mapDispatchToProps = {
   onAddExercises: addExercises,
   onAddSet: addSet,
   onDeleteSet: deleteSet,
-  onReorderSets: reorderExercises
+  onReorderExercises: reorderExercises
 };
 
 export default connect(

@@ -72,8 +72,13 @@ export default ExerciseList;
 export function DroppableExerciseList(props) {
   const { onReorder, ...theRest } = props;
 
-  const [dropRef] = useDrop(DRAG_ITEM_TYPE_EXERCISE);
-  const [isDragging, getItemStyles] = useDragLayer();
+  const [isDragging, getItemStyles, currentDragIndex] = useDragLayer();
+  const [dropRef] = useDrop(DRAG_ITEM_TYPE_EXERCISE, item =>
+    onReorder({
+      sourceIndex: item.index,
+      destinationIndex: currentDragIndex
+    })
+  );
 
   // React.useEffect(() => {
   //   setDragging(collectedProps.isDragging);

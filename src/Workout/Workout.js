@@ -53,8 +53,9 @@ function Workout(props) {
     onAddExercises,
     onAddSet,
     onDeleteSet,
-    onReorderSets
+    onReorderExercises
   } = props;
+
   const classes = useStyles();
   const [muscleGroups, setMuscleGroups] = React.useState([]);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -142,7 +143,7 @@ function Workout(props) {
           sets={sets}
           onAddSet={onAddSet}
           onDeleteSet={onDeleteSet}
-          onReorder={onReorderSets}
+          onReorder={onReorderExercises}
         />
         <ListItem>{renderAddExerciseButton()}</ListItem>
       </div>
@@ -200,7 +201,7 @@ Workout.defaultProps = {
   onAddExercises: fp.noop,
   onAddSet: fp.noop,
   onDeleteSet: fp.noop,
-  onReorderSets: fp.noop
+  onReorderExercises: fp.noop
 };
 
 export default Workout;

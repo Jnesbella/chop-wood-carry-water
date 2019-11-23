@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
-import { Box, Chip } from "@material-ui/core";
+import { Box, Chip, Button } from "@material-ui/core";
 import { Clear as ClearIcon } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import * as yup from "yup";
@@ -17,84 +17,37 @@ const useStyles = makeStyles(theme => ({
   inputDivider: {
     position: "relative",
     top: theme.spacing(3)
+  },
+  labelButton: {
+    top: theme.spacing(0.25),
+    padding: theme.spacing(0.875, 2)
   }
 }));
 
 const RANGE_REGEX = /^\d+\s*-?\s*\d+$/gim;
 const VOLUME_SCHEMA_REPS = yup.string().matches(RANGE_REGEX);
 const INTENSITY_SCHEMA_WEIGHT = yup.number().positive();
-const VOLUME_SCHEMA_MIN = yup
-  .number()
-  .positive()
-  .integer();
-const VOLUME_SCHEMA_MAX = yup
-  .number()
-  .positive()
-  .integer();
 
 const INPUT_NAME_INTENSITY = "intensity";
 const INPUT_NAME_VOLUME = "volume";
-export const INPUT_NAME_VOLUME_MIN = "volumeMin";
-export const INPUT_NAME_VOLUME_MAX = "volumeMax";
-export const INPUT_NAME_PERCENT_ONE_REP_MAX = "percentOneRepMax";
 
 function SetInput(props) {
   const { onChange, label, className } = props;
   const classes = useStyles();
 
-  const [advanceOptionsOpen, setAdvanceOptionsOpen] = React.useState(false);
-  const [isPercentOneRepMax, setIsPercentOneRepMax] = React.useState(false);
-  const [isAsManyRepsAsPossible, setIsAsManyRepsAsPossible] = React.useState(
-    false
-  );
-  const [isRepRange, setIsRepRange] = React.useState(false);
-  const [validity, setValidity] = React.useState({
-    [INPUT_NAME_INTENSITY]: true,
-    [INPUT_NAME_VOLUME]: true,
-    [INPUT_NAME_PERCENT_ONE_REP_MAX]: true,
-    [INPUT_NAME_VOLUME_MIN]: true,
-    [INPUT_NAME_VOLUME_MAX]: true
-  });
-  const [values, setValues] = React.useState({
-    [INPUT_NAME_INTENSITY]: "",
-    [INPUT_NAME_VOLUME]: "",
-    [INPUT_NAME_PERCENT_ONE_REP_MAX]: "",
-    [INPUT_NAME_VOLUME_MIN]: "",
-    [INPUT_NAME_VOLUME_MAX]: ""
-  });
+  const [actionsOpen, setActionsOpen] = React.useState(false);
+  const [intensity, setIntensity] = React.useState({});
 
-  const percentOneRepMaxRef = React.useRef(null);
-  React.useEffect(() => {
-    if (!isPercentOneRepMax) return;
-
-    percentOneRepMaxRef.current.focus();
-  }, [isPercentOneRepMax]);
-  const volumeMinRef = React.useRef(null);
-  React.useEffect(() => {
-    if (!isRepRange) return;
-
-    volumeMinRef.current.focus();
-  }, [isRepRange]);
-
-  const isValid = () => {
-    const { volume: volumeValue, intensity: intensityValue } = values;
-
-    return (
-      VOLUME_SCHEMA_REPS.isValid(volumeValue) &&
-      INTENSITY_SCHEMA_WEIGHT.isValid(intensityValue)
-    );
-  };
+  const isValid = () => true;
 
   const fireChange = () => {
-    if (!isValid()) {
-      return;
-    }
+    if (!isValid()) return;
 
-    const { volume: volumeValue, intensity: intensityValue } = values;
+    // const { volume: volumeValue, intensity: intensityValue } = values;
 
     onChange({
       volume: {
-        value: volumeValue,
+        value: "", // volumeValue,
         type: "REPS",
         isRepRange: false,
         minReps: 0,
@@ -102,7 +55,7 @@ function SetInput(props) {
         amrap: false
       },
       intensity: {
-        value: intensityValue,
+        value: "", // intensityValue,
         type: "WEIGHT",
         percentOneRepMax: false
       }
@@ -112,88 +65,49 @@ function SetInput(props) {
   const handleInputChange = event => {
     const { name, value } = event.target;
 
-    setValues({ ...values, [name]: value });
+    // setValues({ ...values, [name]: value });
   };
 
-  const renderAdvanceOptions = () => {
-    return (
-      <SetOptionsDrawer
-        isOpen={advanceOptionsOpen}
-        onClose={() => setAdvanceOptionsOpen(false)}
-        isAsManyRepsAsPossible={isAsManyRepsAsPossible}
-        onToggleAsManyRepsAsPossibleSwitch={() =>
-          setIsAsManyRepsAsPossible(!isAsManyRepsAsPossible)
-        }
-        isPercentOneRepMax={isPercentOneRepMax}
-        onToggleOneRepMaxSwitch={() =>
-          setIsPercentOneRepMax(!isPercentOneRepMax)
-        }
-        percentOneRepMaxValue={values[INPUT_NAME_PERCENT_ONE_REP_MAX]}
-        percentOneRepMaxRef={percentOneRepMaxRef}
-        percentOneRepMaxError={!validity[INPUT_NAME_PERCENT_ONE_REP_MAX]}
-        onPercentOneRepMaxChange={handleInputChange}
-        isRepRange={isRepRange}
-        onToggleRepRangeSwitch={() => setIsRepRange(!isRepRange)}
-        repRangeMinValue={values[INPUT_NAME_VOLUME_MIN]}
-        repRangeMinRef={volumeMinRef}
-        repRangeMinError={!validity[INPUT_NAME_VOLUME_MIN]}
-        repRangeMaxValue={values[INPUT_NAME_VOLUME_MIN]}
-        onRepRangeMinChange={handleInputChange}
-        repRangeMaxValue={values[INPUT_NAME_VOLUME_MAX]}
-        repRangeMaxError={!validity[INPUT_NAME_VOLUME_MAX]}
-        onRepRangeMaxChange={handleInputChange}
-      />
-    );
+  const renderSetActions = () => {
+    return null;
   };
 
   return (
     <Box className={className}>
       <Box display="flex" flexWrap="nowrap" alignItems="center">
-        <Chip
-          variant="outlined"
-          label={label}
-          className={classes.chip}
-          size="small"
-          color="primary"
-          clickable
-          onClick={() => setAdvanceOptionsOpen(true)}
-        />
-      </Box>
+        <Box mr={0.5}>
+          <Button variant="outlined" className={classes.labelButton}>
+            {label}
+          </Button>
+        </Box>
 
-      <Box display="flex" flexWrap="nowrap" alignItems="baseline">
-        <Box>
+        <Box mx={0.5} flex={1}>
           <WeightInput
             name={INPUT_NAME_INTENSITY}
-            value={values[INPUT_NAME_INTENSITY]}
+            value={intensity.value}
             margin="dense"
-            error={!validity[INPUT_NAME_INTENSITY]}
-            onChange={handleInputChange}
-            percentOfOneRepMax={values[INPUT_NAME_PERCENT_ONE_REP_MAX]}
+            error={!intensity.valid}
+            onChange={setIntensity}
             variant="outlined"
           />
         </Box>
 
-        <Box px={1}>
-          <Box className={classes.inputDivider}>
-            <ClearIcon fontSize="small" />
-          </Box>
-        </Box>
-
-        <Box>
+        <Box ml={0.5} flex={1}>
           <RepsInput
             name={INPUT_NAME_VOLUME}
-            value={values[INPUT_NAME_VOLUME]}
+            // value={values[INPUT_NAME_VOLUME]}
             margin="dense"
-            error={!validity[INPUT_NAME_VOLUME]}
-            onChange={handleInputChange}
-            min={values[INPUT_NAME_VOLUME_MIN]}
-            max={values[INPUT_NAME_VOLUME_MAX]}
-            amrap={isAsManyRepsAsPossible}
+            // error={!validity[INPUT_NAME_VOLUME]}
+            // onChange={handleInputChange}
+            // min={values[INPUT_NAME_VOLUME_MIN]}
+            // max={values[INPUT_NAME_VOLUME_MAX]}
+            // amrap={isAsManyRepsAsPossible}
             variant="outlined"
           />
         </Box>
       </Box>
-      {renderAdvanceOptions()}
+
+      {renderSetActions()}
     </Box>
   );
 }

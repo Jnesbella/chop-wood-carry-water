@@ -8,13 +8,21 @@ import {
   ExpansionPanelSummary,
   ExpansionPanelDetails,
   ExpansionPanelActions,
-  ListItem
+  IconButton,
+  CardHeader,
+  CardContent,
+  CardActions,
+  ListItem,
+  Card
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
 import { makeStyles } from "@material-ui/core/styles";
 import uuidv4 from "uuid/v4";
-import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import {
+  ExpandMore as ExpandMoreIcon,
+  MoreVert as MoreVertIcon
+} from "@material-ui/icons";
 
 import useDrag from "../Hooks/useDrag";
 
@@ -24,14 +32,20 @@ import { makeSwipeable } from "./Gestures";
 const SwipeableSetInput = makeSwipeable(SetInput);
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    width: "100%"
+  },
   setInput: {
-    padding: theme.spacing(1, 2)
+    padding: theme.spacing(0)
   },
   setDivider: {
     // marginTop: theme.spacing(1)
   },
   cardContent: {
-    padding: 0
+    padding: theme.spacing(0, 1)
+  },
+  cardActions: {
+    padding: theme.spacing(1)
   }
 }));
 
@@ -47,25 +61,28 @@ const ExerciseCard = React.forwardRef((props, ref) => {
   } = props;
   const classes = useStyles();
 
+  const renderSetCount = () => {
+    return null;
+
+    return (
+      !expanded && (
+        <Typography className="exercise-set-count" color="textSecondary">
+          {sets.length} sets{" "}
+        </Typography>
+      )
+    );
+  };
+
   const renderCardHeader = () => {
     return (
-      <Box
-        justifyContent="space-between"
-        display="flex"
-        width="100%"
-        {...headerProps}
-      >
-        <Box display="flex">
-          <Typography component="span" color="textPrimary">
-            {exerciseName}
-          </Typography>
-        </Box>
-        {!expanded && (
-          <Typography className="exercise-set-count" color="textSecondary">
-            {sets.length} sets{" "}
-          </Typography>
-        )}
-      </Box>
+      <CardHeader
+        title={exerciseName}
+        action={
+          <IconButton aria-label="settings">
+            <MoreVertIcon />
+          </IconButton>
+        }
+      />
     );
   };
 
@@ -78,10 +95,9 @@ const ExerciseCard = React.forwardRef((props, ref) => {
           <Box key={uuidv4()}>
             <SwipeableSetInput
               className={classes.setInput}
-              label={`Set ${index + 1}`}
+              label={`${index + 1}`}
               onDelete={() => onDeleteSet(set.id)}
             />
-            {index !== sets.length - 1 && <Divider variant="middle" />}
           </Box>
         ))}
       </Box>
@@ -90,25 +106,36 @@ const ExerciseCard = React.forwardRef((props, ref) => {
 
   const renderAddSetButton = () => {
     return (
-      <Button fullWidth onClick={onAddSet} color="primary">
+      <Button onClick={onAddSet} color="secondary" variant="outlined" fullWidth>
         Add Set
       </Button>
     );
   };
 
+  const renderCardContent = () => {
+    if (!sets.length) return null;
+
+    return (
+      <CardContent className={classes.cardContent}>{renderSets()}</CardContent>
+    );
+  };
+
+  const renderCardActions = () => {
+    return (
+      <CardActions className={classes.cardActions}>
+        {renderAddSetButton()}
+      </CardActions>
+    );
+  };
+
   return (
-    <ExpansionPanel expanded={expanded} onChange={onToggle} ref={ref}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        {renderCardHeader()}
-      </ExpansionPanelSummary>
+    <Card ref={ref} className={classes.root}>
+      {renderCardHeader()}
 
-      <ExpansionPanelDetails className={classes.cardContent}>
-        {renderSets()}
-      </ExpansionPanelDetails>
-      {sets.length > 0 && <Divider />}
+      {renderCardContent()}
 
-      <ExpansionPanelActions>{renderAddSetButton()}</ExpansionPanelActions>
-    </ExpansionPanel>
+      {renderCardActions()}
+    </Card>
   );
 });
 

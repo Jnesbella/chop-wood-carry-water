@@ -6,10 +6,7 @@ import fp from "lodash/fp";
 import useDrop from "../Hooks/useDrop";
 import useDragLayer from "../Hooks/useDragLayer";
 
-import {
-  DraggableExerciseCard as ExerciseCard,
-  DRAG_ITEM_TYPE_EXERCISE
-} from "./ExerciseCard";
+import ExerciseCard, { DRAG_ITEM_TYPE_EXERCISE } from "./ExerciseCard";
 
 function ExerciseList(props) {
   const {
@@ -41,18 +38,20 @@ function ExerciseList(props) {
     const expanded = !!expandedExercises[id] && !forceExercisesCollapsed;
 
     return (
-      <ExerciseCard
-        key={id}
-        id={id}
-        index={index}
-        exerciseName={exercise.name}
-        sets={getSetsForExercise(exercise)}
-        onAddSet={() => onAddSet(id)}
-        onDeleteSet={onDeleteSet}
-        expanded={expanded}
-        onToggle={handleToggleExercise(id)}
-        style={itemStylerFunc(index)}
-      />
+      <ListItem>
+        <ExerciseCard
+          key={id}
+          id={id}
+          index={index}
+          exerciseName={exercise.name}
+          sets={getSetsForExercise(exercise)}
+          onAddSet={() => onAddSet(id)}
+          onDeleteSet={onDeleteSet}
+          expanded={expanded}
+          onToggle={handleToggleExercise(id)}
+          style={itemStylerFunc(index)}
+        />
+      </ListItem>
     );
   };
 
@@ -64,7 +63,8 @@ ExerciseList.defaultProps = {
   sets: [],
   onAddSet: fp.noop,
   onDeleteSet: fp.noop,
-  forceExercisesCollapsed: false
+  forceExercisesCollapsed: false,
+  itemStylerFunc: fp.noop
 };
 
 export default ExerciseList;

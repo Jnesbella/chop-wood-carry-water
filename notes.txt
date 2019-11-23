@@ -1,0 +1,54 @@
+// Exercise Set Templates
+Examples: [
+  {
+    label: 'hypertrophy A',
+    sets: [
+      {
+        repRange: {
+          min: 8,
+          max: 12,
+        }
+      }
+    ]
+  },
+  {
+    label: 'hypertrophy B',
+    sets: [
+      {
+        repRange: {
+          min: 12,
+          max: 20,
+        }
+      }
+    ]
+  },
+  {
+    label: 'power A',
+    sets: [
+      {
+        repRange: {
+          min: 6,
+          max: 10,
+        }
+      }
+    ]
+    
+  },
+  {
+    label: '5/3/1 week 1',
+    sets: [
+      {
+        reps: 5,
+        percentTM: 65,
+      },
+      {
+        reps: 5,
+        percentTM: 75,
+      },
+      {
+        reps: 5,
+        percentTM: 85,
+      }
+    ]
+  }
+]

@@ -6,7 +6,7 @@ import { Typography, Chip, Divider, Button, ListItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddExerciseModal from "../AddExercise/AddExerciseModal";
 
-import { DroppableExerciseList as ExerciseList } from "./ExerciseList";
+import ExerciseList from "./ExerciseList";
 
 const useStyles = makeStyles(theme => ({
   workoutContainer: {

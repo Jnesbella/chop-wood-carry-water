@@ -1,12 +1,11 @@
 import React from "react";
-import { TextField, InputAdornment } from "@material-ui/core";
+import { TextField, InputAdornment, IconButton } from "@material-ui/core";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
-
-// const LABEL = "intensity";
-// const ADORNMENT = "lbs";
+import Close from '@material-ui/icons/Close';
 
 const LABEL = "lbs";
+// const PLACEHOLDER = "e.g., 125, =TM, =1RM, =65%TM, =90%1RM";
 
 export const PERCENT_OF_TRAINING_FUNC = "PERCENT_OF_TRAINING";
 export const DIGIT_FUNC = "DIGIT_FUNC";
@@ -53,7 +52,7 @@ const getChangeValue = value => {
       valid: true,
       value,
       func: funcName,
-      ...parseValue(value)
+      ...(parseValue(value) || {}),
     };
   }
 
@@ -64,31 +63,31 @@ const getChangeValue = value => {
   };
 };
 
+const getHelperText = (value) => {
+  const { func } = value;
+
+  if (func === PERCENT_OF_TRAINING_FUNC) {
+    const { percent } = value;
+    return `${percent}%TM`;
+  }
+
+  return "";
+};
+
 function IntensityInputWeight(props) {
   const { value, onChange, ...theRest } = props;
 
   const [internalValue, setInternalValue] = React.useState("");
   const [focused, setFocused] = React.useState(false);
-  const [changeValue, setChangeValue] = React.useState({});
+  const [helperText, setHelperText] = React.useState(null);
 
   React.useEffect(() => {
     if (focused) return;
 
     const val = getChangeValue(internalValue);
-    setChangeValue(val);
+    setHelperText(getHelperText(val));
     onChange(val);
   }, [focused]);
-
-  const getHelperText = () => {
-    const { func } = changeValue;
-
-    if (func === PERCENT_OF_TRAINING_FUNC) {
-      const { percent } = changeValue;
-      return `${percent}%TM`;
-    }
-
-    return "";
-  };
 
   const handleChange = event => {
     if (!focused) return;
@@ -97,23 +96,38 @@ function IntensityInputWeight(props) {
     setInternalValue(value);
   };
 
-  const handleFocus = () => setFocused(true);
+  const handleFocus = () => { setFocused(true); };
 
-  const handleBlur = () => setFocused(false);
+  const handleBlur = () => { setFocused(false); };
+
+  const handleClearInput = () => {
+    setInternalValue('');
+  };
+
+  const endAdornment = focused && (
+    <InputAdornment position="end">
+      <IconButton
+        aria-label="clear input"
+        onClick={handleClearInput}
+        edge="end"
+        size="small"
+      >
+        <Close />
+      </IconButton>
+    </InputAdornment>
+  );
 
   return (
     <TextField
       label={LABEL}
-      placeholder=""
+      // placeholder={PLACEHOLDER}
       InputLabelProps={{
-        shrink: true // placeholder.length > 0
+        shrink: true, // placeholder.length > 0
       }}
-      // InputProps={{
-      //   endAdornment: (
-      //     <InputAdornment position="end">{ADORNMENT}</InputAdornment>
-      //   )
-      // }}
-      helperText={getHelperText()}
+      InputProps={{
+        endAdornment,
+      }}
+      helperText={helperText}
       value={focused ? internalValue : ""}
       onChange={handleChange}
       onFocus={handleFocus}
@@ -127,6 +141,8 @@ IntensityInputWeight.protoTypes = {
   percentOfOneRepMax: PropTypes.number
 };
 
-IntensityInputWeight.defaultProps = {};
+IntensityInputWeight.defaultProps = {
+  onChange: fp.noop,
+};
 
 export default IntensityInputWeight;

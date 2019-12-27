@@ -1,13 +1,59 @@
+// Intensity Records
+Intensity: [
+  {
+    type: "BARBELL",
+    value: 135,
+    units: "LBS",
+  },
+  {
+    type: "DUBMBELLS",
+    value: 40,
+    units: "LBS",
+  },
+  {
+    type: "MACHINE",
+    value: 35,
+    units: "LBS",
+  },
+  {
+    type: "BODYWEIGHT",
+  }
+]
+
+// Volume Records
+Volume: [
+  {
+    type: "REPS",
+    value: 10,
+  },
+  {
+    type: "DURATION",
+    value: 360, // seconds
+  }
+]
+
+// Set Record
+Sets: [
+  {
+    volume: ...,
+    intensity: ...,
+    exercisedId: 1,
+    tags: ["WARMUP", "DROP", "JOKER"],
+
+  }
+]
+
 // Exercise Set Templates
 Examples: [
   {
     label: 'hypertrophy A',
     sets: [
       {
-        repRange: {
+        type: "REPS",
+        range: {
           min: 8,
           max: 12,
-        }
+        },
       }
     ]
   },
@@ -15,7 +61,8 @@ Examples: [
     label: 'hypertrophy B',
     sets: [
       {
-        repRange: {
+        type: "REPS",
+        range: {
           min: 12,
           max: 20,
         }
@@ -26,29 +73,67 @@ Examples: [
     label: 'power A',
     sets: [
       {
-        repRange: {
+        volume: {
+          type: "REPS",
           min: 6,
           max: 10,
         }
       }
     ]
-    
   },
   {
     label: '5/3/1 week 1',
     sets: [
       {
-        reps: 5,
-        percentTM: 65,
+        volume: {
+          type: "REPS",
+          min: 5,
+        },
+        intensity: {
+          type: "PERCENT_TM",
+          value: 65,
+        }
       },
       {
-        reps: 5,
-        percentTM: 75,
+        volume: {
+          type: "REPS",
+          min: 5,
+        },
+        intensity: {
+          type: "PERCENT_TM",
+          value: 75,
+        }
       },
       {
-        reps: 5,
-        percentTM: 85,
+        volume: {
+          type: "REPS",
+          value: 5,
+        },
+        intensity: {
+          type: "PERCENT_TM",
+          value: 85,
+        }
       }
     ]
   }
 ]
+
+// Goals
+// 1RM, TM, Bodyweight, ect,
+
+Gym {
+  equipment: []
+  name: "Celli's"
+}
+
+Workout: {
+  gymId: 1
+}
+
+UserCreatedContent: {
+  Exercises,
+  Workouts,
+  SetTemplates,
+  Gyms,
+  Equipment,
+}

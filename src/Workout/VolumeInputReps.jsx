@@ -3,6 +3,7 @@ import { TextField, InputAdornment, IconButton } from "@material-ui/core";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
 import Close from '@material-ui/icons/Close';
+import { makeStyles } from "@material-ui/core/styles";
 
 const AMRAP = "AMRAP";
 const LABEL = "reps";
@@ -11,6 +12,12 @@ export const REP_RANGE_FUNC = "REP_RANGE_FUNC";
 // export const DIGIT_FUNC = "DIGIT_FUNC";
 export const EMPTY_FUNC = "EMPTY_FUNC";
 export const AMRAP_FUNC = "AMRAP_FUNC";
+
+const useStyles = makeStyles(theme => ({
+  helperText: {
+    marginBottom: theme.spacing(-2.5)
+  }
+}));
 
 // const PLACEHOLDER = "e.g., 10, =10+, =8-12, =8-12+";
 // const REP_REGEX = /^\s*(\d+)\s*$/im;
@@ -94,6 +101,7 @@ const getHelperText = value => {
 
 function VolumeInputReps(props) {
   const { value, onChange, ...theRest } = props;
+  const classes = useStyles();
 
   const [internalValue, setInternalValue] = React.useState("");
   const [focused, setFocused] = React.useState(false);
@@ -149,6 +157,7 @@ function VolumeInputReps(props) {
         endAdornment,
       }}
       helperText={helperText}
+      FormHelperTextProps={{ classes: { root: classes.helperText } }}
       value={focused ? internalValue : ""}
       onChange={handleChange}
       onFocus={handleFocus}

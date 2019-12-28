@@ -5,10 +5,13 @@ import { Box, Chip, Button } from "@material-ui/core";
 import { Clear as ClearIcon } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import * as yup from "yup";
+import classNames from 'classnames';
 
 import RepsInput from "./VolumeInputReps";
 import WeightInput from "./IntensityInputWeight";
 import SetOptionsDrawer from "./SetOptionsDrawer";
+
+// marginBottom: theme.spacing(-16)
 
 const useStyles = makeStyles(theme => ({
   chip: {
@@ -18,9 +21,11 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     top: theme.spacing(3)
   },
-  labelButton: {
-    top: theme.spacing(0.25),
-    padding: theme.spacing(0.875, 2)
+  setLabel: {
+    marginTop: theme.spacing(0.75),
+  },
+  setInputContainer: {
+    marginBottom: theme.spacing(2.5)
   }
 }));
 
@@ -73,12 +78,10 @@ function SetInput(props) {
   };
 
   return (
-    <Box className={className}>
+    <Box className={classNames(className, classes.setInputContainer)}>
       <Box display="flex" flexWrap="nowrap" alignItems="center">
-        <Box mr={0.5}>
-          <Button variant="outlined" className={classes.labelButton}>
-            {label}
-          </Button>
+        <Box className={classes.setLabel} mr={0.5}>
+          {label}
         </Box>
 
         <Box mx={0.5} flex={1}>

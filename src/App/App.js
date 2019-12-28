@@ -1,5 +1,5 @@
 import React from "react";
-import { Provider } from "react-redux";
+import { Provider, ReactReduxContext } from "react-redux";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
 import {
@@ -18,8 +18,15 @@ import {
 import { deepPurple, grey } from "@material-ui/core/colors";
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import LibraryIcon from '@material-ui/icons/Collections';
+import SearchIcon from '@material-ui/icons/Search';
+import ProfileIcon from '@material-ui/icons/Face';
 
 import Workout from "../Workout";
+import Library from '../Library';
+import Router from '../Router';
 
 import "./App.css";
 
@@ -39,6 +46,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function App(props) {
+  const { store, history } = props;
   const classes = useStyles();
 
   React.useEffect(() => {
@@ -55,13 +63,25 @@ function App(props) {
         </Toolbar>
       </AppBar>
     );
-  }
+  };
+
+  const renderBottomNav = () => {
+    return (
+      <BottomNavigation
+        onChange={(event, newValue) => {}}
+        showLabels
+      >
+        <BottomNavigationAction label="Library" icon={<LibraryIcon />} />
+        <BottomNavigationAction label="Search" icon={<SearchIcon />} />
+        <BottomNavigationAction label="Profile" icon={<ProfileIcon />} />
+      </BottomNavigation>
+    );
+  };
 
   function renderContent() {
-    return <Workout />;
+    // return <Router />;
+    return null;
   }
-
-  const { store } = props;
 
   return (
     <Provider store={store} className="App">
@@ -69,10 +89,10 @@ function App(props) {
         <MuiThemeProvider theme={theme}>
           <Container maxWidth="xs">
             <Paper square className={classes.content}>
-              <DndProvider backend={HTML5Backend}>
-                {renderHeader()}
-                {renderContent()}
-              </DndProvider>
+              {/* <DndProvider backend={HTML5Backend}> */}
+                <Router history={history} />
+                {renderBottomNav()}
+              {/* </DndProvider> */}
             </Paper>
           </Container>
         </MuiThemeProvider>

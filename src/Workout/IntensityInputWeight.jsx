@@ -3,6 +3,13 @@ import { TextField, InputAdornment, IconButton } from "@material-ui/core";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
 import Close from '@material-ui/icons/Close';
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles(theme => ({
+  helperText: {
+    marginBottom: theme.spacing(-2.5)
+  }
+}));
 
 const LABEL = "lbs";
 // const PLACEHOLDER = "e.g., 125, =TM, =1RM, =65%TM, =90%1RM";
@@ -76,13 +83,17 @@ const getHelperText = (value) => {
 
 function IntensityInputWeight(props) {
   const { value, onChange, ...theRest } = props;
+  const classes = useStyles();
 
   const [internalValue, setInternalValue] = React.useState("");
   const [focused, setFocused] = React.useState(false);
   const [helperText, setHelperText] = React.useState(null);
 
   React.useEffect(() => {
-    if (focused) return;
+    if (focused) {
+      setHelperText('');
+      return;
+    };
 
     const val = getChangeValue(internalValue);
     setHelperText(getHelperText(val));
@@ -128,6 +139,7 @@ function IntensityInputWeight(props) {
         endAdornment,
       }}
       helperText={helperText}
+      FormHelperTextProps={{ classes: { root: classes.helperText } }}
       value={focused ? internalValue : ""}
       onChange={handleChange}
       onFocus={handleFocus}

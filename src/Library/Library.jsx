@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
 import classNames from "classnames";
@@ -15,12 +15,21 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     minHeight: "100vh"
   },
+  speedDial: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
 }));
 
 function renderListItems(items, subheader) {
   return (
     <React.Fragment>
-      {subheader && <ListSubheader>{subheader}</ListSubheader>}
+      {
+        subheader && <ListSubheader>
+          {subheader}
+        </ListSubheader>
+      }
       {
         items.length
           ? items.map(item => (
@@ -46,7 +55,6 @@ function Library(props) {
     equipment,
     gyms,
   } = props;
-
   const classes = useStyles();
 
   const renderWorkouts = () => renderListItems(workouts, 'Workouts');

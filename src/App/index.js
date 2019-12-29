@@ -1,3 +1,3 @@
-import App from './ConnectedApp';
+import App from './App';
 
 export default App;

@@ -15,6 +15,8 @@ import { useHistory } from 'react-router';
 
 import Modal from '../Modal';
 
+import AddNewExercise from './AddNewExercise';
+
 const useStyles = makeStyles(theme => ({
   modalContent: {
     outline: "none",
@@ -42,7 +44,8 @@ function AddNewLibraryItemModal(props) {
       }}
       {...props}
     >
-      <FormControl component="fieldset">
+      <AddNewExercise />
+      {/* <FormControl component="fieldset">
         <FormLabel>
           <Typography variant="h4" color="primary">
             Create New
@@ -72,7 +75,7 @@ function AddNewLibraryItemModal(props) {
         >
           Next
         </Button>
-      </Box>
+      </Box> */}
     </Modal>
   );
 }

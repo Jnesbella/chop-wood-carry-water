@@ -137,3 +137,8 @@ UserCreatedContent: {
   Gyms,
   Equipment,
 }
+
+Export workout to paper journal
+Upload completed paper journal and log sets/reps
+
+Find a gym and show available equipment

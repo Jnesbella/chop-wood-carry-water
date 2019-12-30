@@ -2,6 +2,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import PropTypes from "prop-types";
 import fp from "lodash/fp";
+import Box from "@material-ui/core/Box";
 
 import Router from '../Router';
 import BottomNavigation from '../BottomNavigation';
@@ -16,10 +17,10 @@ function App(props) {
     <Provider store={store} className="App">
       <SetupApp />
       <AppContainer>
-        <Router
-          history={history}
-          bottomNavigation={showBottomNav && <BottomNavigation />}
-        />
+        <Box flex={1}>
+          <Router history={history} />
+        </Box>
+        {showBottomNav && <BottomNavigation history={history} />}
       </AppContainer>
     </Provider>
   );

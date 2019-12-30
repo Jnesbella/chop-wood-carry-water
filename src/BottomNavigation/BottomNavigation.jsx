@@ -5,7 +5,6 @@ import LibraryIcon from '@material-ui/icons/Collections';
 import SearchIcon from '@material-ui/icons/Search';
 import ProfileIcon from '@material-ui/icons/Face';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
-import { useHistory } from "react-router";
 
 function createNavigationAction(label, pathname, icon) {
   return {
@@ -22,7 +21,7 @@ export const NAVIGATION_ACTIONS = [
 ];
 
 function BottomNavigationComponent(props) {
-  let history = useHistory();
+  const { history } = props;
   const pathname = useSelector(state => state.router.location.pathname);
   const [value, setValue] = useState(0);
 

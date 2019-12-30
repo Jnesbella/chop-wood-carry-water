@@ -9,7 +9,7 @@ import Library from '../Library';
 import Workout from "../Workout";
 
 function RouterComponent(props) {
-  const { history, bottomNavigation } = props;
+  const { history } = props;
 
   return (
     <ConnectedRouter history={history} >
@@ -18,7 +18,6 @@ function RouterComponent(props) {
       <Route path="/search" render={() => (<div>Search</div>)} />
       <Route path="/profile" render={() => (<div>Profile</div>)} />
       <Redirect from='/' to='/library' />
-      {bottomNavigation}
     </ConnectedRouter>
   )
 };

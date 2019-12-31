@@ -3,16 +3,16 @@ import { Modal, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import fp from "lodash/fp";
 import PropTypes from "prop-types";
+import classNames from 'classnames';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(2),
   },
   modalContent: {
     outline: "none",
     overflow: "auto",
-    height: "100%"
-  }
+  },
 }));
 
 function ModalComponent(props) {
@@ -30,12 +30,15 @@ function ModalComponent(props) {
     <Modal
       onClose={onClose}
       style={{ position: "absolute" }}
-      className={classes.root}
       open={open}
+      className={classes.root}
       container={container}
-    {...theRest}
+      {...theRest}
     >
-      <Paper {...modalContentProps}>
+      <Paper
+        {...modalContentProps}
+        className={classNames(classes.modalContent, (modalContentProps || {}).className)}
+      >
         {children}
       </Paper>
     </Modal>

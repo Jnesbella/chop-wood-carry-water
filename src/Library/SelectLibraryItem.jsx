@@ -5,8 +5,18 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import Header from '../Header';
+
+const useStyles = makeStyles(theme => {
+  return {
+    formControl: {
+      padding: theme.spacing(2),
+      paddingTop: theme.spacing(1),
+    },
+  };
+});
 
 function SelectLibraryItem(props) {
   const {
@@ -17,6 +27,7 @@ function SelectLibraryItem(props) {
     libraryItems,
     disableNext,
   } = props;
+  const classes = useStyles();
 
   const handleChange = event => {
     onChange(event.target.value);
@@ -32,10 +43,12 @@ function SelectLibraryItem(props) {
         }}
         secondaryAction='Close'
         onSecondaryAction={onClose}
+        p={2}
+        pb={0}
       >
         Create New
       </Header>
-      <FormControl component="fieldset">
+      <FormControl component="fieldset" className={classes.formControl}>
         <RadioGroup aria-label="create" name="create" value={value} onChange={handleChange}>
           {
             libraryItems.map(

@@ -29,6 +29,7 @@ function Header(props) {
     secondaryActionProps,
     children,
     scrollContainerRef,
+    ...otherProps,
   } = props;
   const classes = useStyles();
   const [scrolled, setScrolled] = useState(false);
@@ -49,9 +50,13 @@ function Header(props) {
   }, [scrollContainerRef.current]);
 
   return (
-    <Paper className={classes.header} square elevation={scrolled ? 1 : 0}>
+    <Paper
+      className={classes.header}
+      square
+      elevation={scrolled ? 1 : 0}
+    >
       <Toolbar disableGutters>
-        <Box width="100%">
+        <Box width="100%" {...otherProps}>
           <Box
             className="AddExercise_actions"
             display="flex"

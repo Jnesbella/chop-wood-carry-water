@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types'
 import fp from 'lodash/fp';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import { ExerciseEdit } from '../Exercise';
 import Header from '../Header';
+
+const useStyles = makeStyles(theme => {
+  return {
+    exerciseEdit: {
+      padding: theme.spacing(2),
+      paddingTop: theme.spacing(1),
+    },
+  };
+});
 
 function AddNewExercise(props) {
   const {
@@ -11,21 +21,33 @@ function AddNewExercise(props) {
     onSave,
     disableSave,
   } = props;
+  const classes = useStyles();
+  const [data, setData] = useState({});
+
+  const handleChange = (changeData) => {
+    setData(changeData);
+  };
+
+  const handleSave = () => {
+    onSave(data);
+  };
 
   return (
     <React.Fragment>
       <Header
         primaryAction='Save'
-        onPrimaryAction={onSave}
+        onPrimaryAction={handleSave}
         primaryActionProps={{
           disabled: disableSave,
         }}
         secondaryAction='Back'
         onSecondaryAction={onBack}
+        p={2}
+        pb={0}
       >
         Create New Exercise
       </Header>
-      <ExerciseEdit />
+      <ExerciseEdit onChange={handleChange} className={classes.exerciseEdit} />
     </React.Fragment>
   )
 };

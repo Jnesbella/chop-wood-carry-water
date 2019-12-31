@@ -1,31 +1,32 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch } from 'react-redux';
+import fp from 'lodash/fp';
 
 import Modal from '../Modal';
+import { saveExercise } from '../Redux/Data/data.actions';
 
 import SelectLibraryItem from './SelectLibraryItem';
 import AddNewExercise from './AddNewExercise';
 
-const useStyles = makeStyles(theme => ({
-  modalContent: {
-    outline: "none",
-    padding: theme.spacing(2),
-  },
-}));
+const useStyles = makeStyles(theme => {
+  return {};
+});
 
-function createLibraryItem(id, label, component) {
+function createLibraryItem(id, label, component, action) {
   return {
     id,
     label,
     component,
+    action,
   };
 };
 
 const LIBRARY_ITEMS = [
-  createLibraryItem('exercise', 'Exercise', AddNewExercise),
-  createLibraryItem('workout', 'Workout', null),
-  createLibraryItem('setTemplate', 'Set Template', null),
-  createLibraryItem('gym', 'Gym', null),
+  createLibraryItem('exercise', 'Exercise', AddNewExercise, saveExercise),
+  createLibraryItem('workout', 'Workout', null, fp.noop),
+  createLibraryItem('setTemplate', 'Set Template', null, fp.noop),
+  createLibraryItem('gym', 'Gym', null, fp.noop),
 ];
 
 function AddNewLibraryItemModal(props) {
@@ -33,6 +34,7 @@ function AddNewLibraryItemModal(props) {
   const classes = useStyles();
   const [value, setValue] = useState(undefined);
   const [activeStep, setActiveStep] = useState(0);
+  const dispatch = useDispatch();
 
   const handleNext = () => {
     setActiveStep(1);
@@ -42,12 +44,16 @@ function AddNewLibraryItemModal(props) {
     setActiveStep(0);
   };
 
-  const handleSave = () => {
-
+  const handleSave = payload => {
+    const action = (LIBRARY_ITEMS.find(item => item.id === value) || {}).action || fp.noop;
+    dispatch(
+      action(payload)
+    );
+    onClose();
   };
 
   const renderNewItemForm = () => {
-    const { component: Component } = LIBRARY_ITEMS.find(item => item.id === value) || {};
+    const { component: Component } = (LIBRARY_ITEMS.find(item => item.id === value) || {});
     if (Component) return <Component onBack={handleBack} onSave={handleSave} />;
     return null;
   };

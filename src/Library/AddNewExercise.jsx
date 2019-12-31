@@ -1,19 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types'
-import Button from '@material-ui/core/Button';
 import fp from 'lodash/fp';
 
 import { ExerciseEdit } from '../Exercise';
 import Header from '../Header';
 
 function AddNewExercise(props) {
-  const { onBack, onSave } = props;
+  const {
+    onBack,
+    onSave,
+    disableSave,
+  } = props;
 
   return (
     <React.Fragment>
       <Header
-        primaryAction={<Button onClick={onSave} color='primary'>Save</Button>}
-        secondaryAction={<Button onClick={onBack} color='secondary'>Back</Button>}
+        primaryAction='Save'
+        onPrimaryAction={onSave}
+        primaryActionProps={{
+          disabled: disableSave,
+        }}
+        secondaryAction='Back'
+        onSecondaryAction={onBack}
       >
         Create New Exercise
       </Header>
@@ -25,11 +33,13 @@ function AddNewExercise(props) {
 AddNewExercise.propTypes = {
   onSave: PropTypes.func,
   onBack: PropTypes.func,
+  disableSave: PropTypes.bool,
 }
 
 AddNewExercise.defaultProps = {
   onSave: fp.noop,
   onBack: fp.noop,
+  disableSave: false,
 };
 
 export default AddNewExercise;

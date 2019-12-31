@@ -1,40 +1,73 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import fp from "lodash/fp";
-import PropTypes from "prop-types";
-import Box from "@material-ui/core/Box";
-import Paper from '@material-ui/core/Paper';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Button from "@material-ui/core/Button";
-import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router';
 
 import Modal from '../Modal';
 
+import SelectLibraryItem from './SelectLibraryItem';
 import AddNewExercise from './AddNewExercise';
 
 const useStyles = makeStyles(theme => ({
   modalContent: {
     outline: "none",
-    padding: theme.spacing(1),
-  },
-  nextButton: {
-    marginLeft: theme.spacing(1),
+    padding: theme.spacing(2),
   },
 }));
 
+function createLibraryItem(id, label, component) {
+  return {
+    id,
+    label,
+    component,
+  };
+};
+
+const LIBRARY_ITEMS = [
+  createLibraryItem('exercise', 'Exercise', AddNewExercise),
+  createLibraryItem('workout', 'Workout', null),
+  createLibraryItem('setTemplate', 'Set Template', null),
+  createLibraryItem('gym', 'Gym', null),
+];
+
 function AddNewLibraryItemModal(props) {
   const { onClose } = props;
-  const history = useHistory();
   const classes = useStyles();
-  const [value, setValue] = React.useState('workout');
+  const [value, setValue] = useState(undefined);
+  const [activeStep, setActiveStep] = useState(0);
 
   const handleNext = () => {
-    history.push(`/${value}/new`);
+    setActiveStep(1);
+  };
+
+  const handleBack = () =>{
+    setActiveStep(0);
+  };
+
+  const handleSave = () => {
+
+  };
+
+  const renderNewItemForm = () => {
+    const { component: Component } = LIBRARY_ITEMS.find(item => item.id === value) || {};
+    if (Component) return <Component onBack={handleBack} onSave={handleSave} />;
+    return null;
+  };
+
+  const renderContent = () => {
+    switch (activeStep) {
+      case 1:
+        return renderNewItemForm();
+      default:
+        return (
+          <SelectLibraryItem
+            onClose={onClose}
+            onNext={handleNext}
+            onChange={setValue}
+            value={value}
+            libraryItems={LIBRARY_ITEMS}
+            disableNext={!value}
+          />
+        );
+    }
   };
 
   return (
@@ -44,38 +77,7 @@ function AddNewLibraryItemModal(props) {
       }}
       {...props}
     >
-      <AddNewExercise />
-      {/* <FormControl component="fieldset">
-        <FormLabel>
-          <Typography variant="h4" color="primary">
-            Create New
-          </Typography>
-        </FormLabel>
-        <RadioGroup aria-label="create" name="create" value={value} onChange={event => setValue(event.target.value)}>
-          <FormControlLabel value="exercise" control={<Radio />} label="Exercise" />
-          <FormControlLabel value="set template" control={<Radio />} label="Set Template" />
-          <FormControlLabel value="workout" control={<Radio />} label="Workout" />
-          <FormControlLabel value="gym" control={<Radio />} label="Gym" />
-        </RadioGroup>
-      </FormControl>
-      <Box display="flex">
-        <Box flex={1} />
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.nextButton}
-          onClick={handleNext}
-        >
-          Next
-        </Button>
-      </Box> */}
+      {renderContent()}
     </Modal>
   );
 }

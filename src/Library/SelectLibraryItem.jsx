@@ -6,6 +6,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Box from '@material-ui/core/Box';
 
 import Header from '../Header';
 
@@ -14,6 +15,9 @@ const useStyles = makeStyles(theme => {
     formControl: {
       padding: theme.spacing(2),
       paddingTop: theme.spacing(1),
+    },
+    radioGroup: {
+      flexDirection: 'row',
     },
   };
 });
@@ -33,6 +37,17 @@ function SelectLibraryItem(props) {
     onChange(event.target.value);
   };
 
+  const renderRadioButton = item => {
+    return (
+      <FormControlLabel
+        key={item.id}
+        label={item.label}
+        value={item.id}
+        control={<Radio/>}
+      />
+    );
+  };
+
   return (
     <React.Fragment>
       <Header
@@ -48,22 +63,19 @@ function SelectLibraryItem(props) {
       >
         Create New
       </Header>
-      <FormControl component="fieldset" className={classes.formControl}>
-        <RadioGroup aria-label="create" name="create" value={value} onChange={handleChange}>
-          {
-            libraryItems.map(
-              item => (
-                <FormControlLabel
-                  key={item.id}
-                  value={item.id}
-                  control={<Radio />}
-                  label={item.label}
-                />
-              )
-            )
-          }
-        </RadioGroup>
-      </FormControl>
+      <Box p={2} pt={1}>
+        <FormControl>
+          <RadioGroup
+            aria-label="create"
+            name="create"
+            value={value}
+            onChange={handleChange}
+            className={classes.radioGroup}
+          >
+            {libraryItems.map(renderRadioButton)}
+          </RadioGroup>
+        </FormControl>
+      </Box>
     </React.Fragment>
   );
 };

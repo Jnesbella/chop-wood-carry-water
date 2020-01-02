@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from 'react-redux';
 import fp from 'lodash/fp';
@@ -30,11 +30,17 @@ const LIBRARY_ITEMS = [
 ];
 
 function AddNewLibraryItemModal(props) {
-  const { onClose } = props;
+  const { onClose, ...otherProps } = props;
   const classes = useStyles();
   const [value, setValue] = useState(undefined);
   const [activeStep, setActiveStep] = useState(0);
   const dispatch = useDispatch();
+
+  const handleClose = () => {
+    setValue(undefined);
+    setActiveStep(0);
+    onClose();
+  };
 
   const handleNext = () => {
     setActiveStep(1);
@@ -49,7 +55,7 @@ function AddNewLibraryItemModal(props) {
     dispatch(
       action(payload)
     );
-    onClose();
+    handleClose();
   };
 
   const renderNewItemForm = () => {
@@ -81,7 +87,8 @@ function AddNewLibraryItemModal(props) {
       modalContentProps={{
         className: classes.modalContent
       }}
-      {...props}
+      onClose={handleClose}
+      {...otherProps}
     >
       {renderContent()}
     </Modal>

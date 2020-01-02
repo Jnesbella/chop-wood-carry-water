@@ -39,7 +39,6 @@ export function saveExercise(payload) {
   return async dispatch => {
     try {
       const exercise = await api.saveExercise(payload);
-      console.log('-- saveExercise - ', exercise);
       dispatch(saveExercisesSuccessAction(exercise));
     }
     catch (err) {}

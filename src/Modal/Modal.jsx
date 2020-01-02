@@ -4,10 +4,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import fp from "lodash/fp";
 import PropTypes from "prop-types";
 import classNames from 'classnames';
+import useTheme from '@material-ui/core/styles/useTheme';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    margin: theme.spacing(2),
+    // margin: theme.spacing(2),
   },
   modalContent: {
     outline: "none",
@@ -25,11 +26,20 @@ function ModalComponent(props) {
     ...theRest
   } = props;
   const classes = useStyles();
+  const theme = useTheme();
+
+  const getStyle = () => ({
+    position: "absolute",
+    top: theme.spacing(2),
+    right: theme.spacing(2),
+    bottom: theme.spacing(2),
+    left: theme.spacing(2),
+  });
 
   return (
     <Modal
       onClose={onClose}
-      style={{ position: "absolute" }}
+      style={getStyle()}
       open={open}
       className={classes.root}
       container={container}

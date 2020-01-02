@@ -2,25 +2,29 @@ import uuidv4 from 'uuid/v4';
 
 import { exercises, workouts } from "./MockData";
 
+// localStorage.clear();
+
 const EXERCISES = 'EXERCISES';
 
 function getItems(source) {
-  return Object.values(localStorage.getItem(source) || {});
+  const item = localStorage.getItem(source);
+  return JSON.parse(item);
 };
 
 function updateItem(source, item) {
-  const items = getItems(source);
-  localStorage.setItem(source, {
+  const items = getItems(source) || {};
+  const updatedItems = {
     ...items,
     [item.id]: item,
-  });
+  };
+  localStorage.setItem(source, JSON.stringify(updatedItems));
 };
 
 const api = {
   getExercises() {
+    const exercises = Object.values(getItems(EXERCISES) || {});
     return Promise.resolve(
-      // exercises
-      getItems(EXERCISES)
+      exercises
     );
   },
 

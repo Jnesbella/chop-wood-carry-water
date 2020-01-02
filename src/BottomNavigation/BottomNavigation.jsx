@@ -5,12 +5,14 @@ import LibraryIcon from '@material-ui/icons/Collections';
 import SearchIcon from '@material-ui/icons/Search';
 import ProfileIcon from '@material-ui/icons/Face';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
+import fp from 'lodash/fp';
 
 function createNavigationAction(label, pathname, icon) {
   return {
     label,
     pathname,
     icon,
+    id: fp.kebabCase(label),
   };
 };
 
@@ -31,11 +33,12 @@ function BottomNavigationComponent(props) {
 
   const renderNavigationActions = () => {
     return NAVIGATION_ACTIONS.map(action => {
-      const { label, icon: Icon } = action;
+      const { label, icon: Icon, id } = action;
       return (
         <BottomNavigationAction
           label={label}
           icon={<Icon />}
+          key={id}
         />
       );
     })

@@ -1,3 +1,5 @@
+import fp from 'lodash/fp';
+
 import {
   LOAD_EXERCISES_SUCCESS,
   LOAD_WORKOUT_SUCCESS,
@@ -10,14 +12,19 @@ export const initialState = {
 };
 
 function updateDataSource(source, item) {
-  const toMap = () => source.reducer((map, currentItem) => ({ ...map, [currentItem.id]: currentItem }), {});
+  console.log('-- updateDataSource --');
+  console.log('-- source - ', source);
+
+  const toMap = () => source.reduce(
+      (map, currentItem) => ({ ...map, [currentItem.id]: currentItem }),
+      {}
+    );
   const updateItem = map => ({ ...map, [item.id]: item });
-  const pipeline = [
+  return fp.flow(
     toMap,
     updateItem,
     Object.values,
-  ];
-  return pipeline.reduce((input, pipe) => pipe(input));
+  )();
 };
 
 const ACTION_HANDLERS = {

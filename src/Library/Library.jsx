@@ -29,7 +29,7 @@ function renderListItems(items, subheader) {
   return (
     <React.Fragment>
       {
-        subheader && <ListSubheader>
+        subheader && <ListSubheader py={1}>
           <Typography variant="h6">
             {`${subheader} (${items.length})`}
           </Typography>
@@ -38,7 +38,7 @@ function renderListItems(items, subheader) {
       {
         items.length
           ? items.map(item => (
-            <ListItem key={item.id} button >
+            <ListItem key={item.id} button divider >
               <ListItemText primary={item.name} />
             </ListItem>
           ))
@@ -102,7 +102,6 @@ function Library(props) {
       </AppBar>
       <List component="nav" aria-label="main mailbox folders">
         {renderExercises()}
-        <Divider />
         {renderWorkouts()}
       </List>
       {renderModal()}

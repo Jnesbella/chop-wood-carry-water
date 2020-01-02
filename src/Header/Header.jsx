@@ -92,10 +92,10 @@ function Header(props) {
 };
 
 Header.propTypes = {
-  primaryAction: PropTypes.object,
+  primaryAction: PropTypes.string,
   onPrimaryAction: PropTypes.func,
   primaryActionProps: PropTypes.object,
-  secondaryAction: PropTypes.object,
+  secondaryAction: PropTypes.string,
   onSecondaryAction: PropTypes.func,
   secondaryActionProps: PropTypes.object,
   scrollContainerRef: PropTypes.object,

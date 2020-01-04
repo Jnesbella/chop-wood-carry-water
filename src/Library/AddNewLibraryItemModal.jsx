@@ -9,10 +9,6 @@ import { saveExercise } from '../Redux/Data/data.actions';
 import SelectLibraryItem from './SelectLibraryItem';
 import AddNewExercise from './AddNewExercise';
 
-const useStyles = makeStyles(theme => {
-  return {};
-});
-
 function createLibraryItem(id, label, component, action) {
   return {
     id,
@@ -31,7 +27,6 @@ const LIBRARY_ITEMS = [
 
 function AddNewLibraryItemModal(props) {
   const { onClose, ...otherProps } = props;
-  const classes = useStyles();
   const [value, setValue] = useState(undefined);
   const [activeStep, setActiveStep] = useState(0);
   const dispatch = useDispatch();
@@ -84,9 +79,6 @@ function AddNewLibraryItemModal(props) {
 
   return (
     <Modal
-      modalContentProps={{
-        className: classes.modalContent
-      }}
       onClose={handleClose}
       {...otherProps}
     >

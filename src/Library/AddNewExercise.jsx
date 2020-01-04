@@ -22,14 +22,10 @@ function AddNewExercise(props) {
     disableSave,
   } = props;
   const classes = useStyles();
-  const [data, setData] = useState({});
-
-  const handleChange = (changeData) => {
-    setData(changeData);
-  };
+  const [values, setValues] = useState(undefined);
 
   const handleSave = () => {
-    onSave(data);
+    onSave(values);
   };
 
   return (
@@ -47,7 +43,11 @@ function AddNewExercise(props) {
       >
         Create New Exercise
       </Header>
-      <ExerciseEdit onChange={handleChange} className={classes.exerciseEdit} />
+      <ExerciseEdit
+        onChange={setValues}
+        className={classes.exerciseEdit}
+        values={values}
+      />
     </React.Fragment>
   )
 };

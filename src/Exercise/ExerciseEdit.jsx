@@ -2,18 +2,40 @@ import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 
+const DEFAULT_VALUES = {
+  name: '',
+};
+
 export function ExerciseEdit(props) {
   const {
     className,
     onChange,
+    values,
+    ExerciseNameProps,
   } = props;
-  const [exerciseName, setExerciseName] = useState('');
 
-  useEffect(() => {
+  const getValues = () => {
+    return {
+      ...DEFAULT_VALUES,
+      ...values,
+    };
+  };
+
+  const { name: exerciseName } = getValues();
+
+  const handleChangeExerciseName = event => {
+    const name = event.target.value;
     onChange({
-      name: exerciseName,
+      ...getValues(),
+      name,
     });
-  }, [exerciseName]);
+  };
+
+  // useEffect(() => {
+  //   onChange({
+  //     name: exerciseName,
+  //   });
+  // }, [exerciseName]);
 
   return (
     <Box className={className}>
@@ -22,9 +44,15 @@ export function ExerciseEdit(props) {
         label='Exercise Name'
         size='medium'
         value={exerciseName}
-        onChange={event => setExerciseName(event.target.value)}
+        onChange={handleChangeExerciseName}
         InputLabelProps={{ shrink: true }}
+        {...ExerciseNameProps}
       />
     </Box>
   );
+};
+
+ExerciseEdit.defaultProps = {
+  values: DEFAULT_VALUES,
+  ExerciseNameProps: {},
 };

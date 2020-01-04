@@ -15,6 +15,7 @@ import Box from "@material-ui/core/Box";
 
 import AppBar from '../AppBar';
 import AddNewLibraryItemModal from './AddNewLibraryItemModal';
+import EditExerciseModal from './EditExerciseModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function renderListItems(items, subheader) {
+function renderListItems(items, subheader, callback = fp.noop) {
   return (
     <React.Fragment>
       {
@@ -38,7 +39,12 @@ function renderListItems(items, subheader) {
       {
         items.length
           ? items.map(item => (
-            <ListItem key={item.id} button divider >
+            <ListItem
+              key={item.id}
+              button
+              divider
+              onClick={() => callback(item.id)}
+            >
               <ListItemText primary={item.name} />
             </ListItem>
           ))
@@ -68,9 +74,16 @@ function Library(props) {
   const workouts = useSelector(state => state.data.workouts);
   const classes = useStyles();
   const [showModal, setShowModal] = useState(false);
+  const [showEditExerciseModal, setShowEditExerciseModal] = useState(false);
+  const [selectedExerciseId, setSelectedExerciseId] = useState(undefined);
   const libraryContainerRef = useRef(null);
 
-  const renderExercises = () => renderListItems(exercises, 'Exercises');
+  const handleSelectExercise = async exerciseId => {
+    await setSelectedExerciseId(exerciseId);
+    setShowEditExerciseModal(true);
+  };
+
+  const renderExercises = () => renderListItems(exercises, 'Exercises', handleSelectExercise);
   const renderWorkouts = () => renderListItems(workouts, 'Workouts');
 
   const renderModal = () => {
@@ -79,6 +92,17 @@ function Library(props) {
         container={libraryContainerRef.current}
         onClose={() => setShowModal(false)}
         open={showModal}
+      />
+    );
+  };
+
+  const renderEditExerciseModal = () => {
+    return selectedExerciseId && (
+      <EditExerciseModal
+        container={libraryContainerRef.current}
+        exerciseId={selectedExerciseId}
+        onClose={() => setShowEditExerciseModal(false)}
+        open={showEditExerciseModal}
       />
     );
   };
@@ -105,6 +129,7 @@ function Library(props) {
         {renderWorkouts()}
       </List>
       {renderModal()}
+      {renderEditExerciseModal()}
     </div>
   );
 }
